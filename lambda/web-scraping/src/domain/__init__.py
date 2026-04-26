@@ -2,7 +2,7 @@
 
 from shared.domain.asset_evaluation import AssetEvaluation
 from shared.domain.asset_record import AssetRecord
-from shared.domain.asset_record_interface import IAssetRecordRepository
+from shared.domain.asset_record_repository import IAssetRecordRepository
 from shared.domain.exceptions import AssetRecordError
 
 from .artifact_interface import IArtifactRepository
