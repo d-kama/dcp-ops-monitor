@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from shared.domain.asset_record_object import AssetRecord
+from shared.domain.asset_record import AssetRecord
 
 
 class IAssetRecordRepository(ABC):
