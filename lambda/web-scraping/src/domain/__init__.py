@@ -5,13 +5,13 @@ from shared.domain.asset_record import AssetRecord
 from shared.domain.asset_record_repository import IAssetRecordRepository
 from shared.domain.exceptions import AssetRecordError
 
-from .artifact_interface import IArtifactRepository
+from .artifact_repository import IArtifactRepository
 from .exceptions import (
     ArtifactUploadError,
     ScrapingFailed,
     WebScrapingFailed,
 )
-from .scraping_interface import IScraper
+from .scraper import IScraper
 from .scraping_object import ScrapingParams
 
 __all__ = [
