@@ -1,6 +1,6 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
-from shared.domain.asset_object import AssetEvaluation
+from shared.domain.asset_evaluation import AssetEvaluation
 
 from .asset_interface import IAssetRepository
 from .exceptions import (

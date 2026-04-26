@@ -3,7 +3,7 @@ from typing import Self
 
 from pydantic import BaseModel
 
-from shared.domain.asset_object import AssetEvaluation
+from shared.domain.asset_evaluation import AssetEvaluation
 
 
 class AssetRecord(BaseModel):

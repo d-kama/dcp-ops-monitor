@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from shared.domain.asset_object import AssetEvaluation
+from shared.domain.asset_evaluation import AssetEvaluation
 
 from .indicator_object import OpsIndicators
 
