@@ -8,9 +8,9 @@ from .exceptions import (
     NotificationFailed,
     SummaryNotificationFailed,
 )
-from .indicator_object import OpsIndicators
 from .indicators_calculator import calculate_indicators
 from .notifier import INotifier
+from .ops_indicators import OpsIndicators
 
 __all__ = [
     # Models

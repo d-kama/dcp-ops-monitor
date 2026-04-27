@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from shared.domain.asset_evaluation import AssetEvaluation
 
-from .indicator_object import OpsIndicators
+from .ops_indicators import OpsIndicators
 
 # 固定パラメータ
 OPERATION_START_DATE = date(2016, 10, 1)
