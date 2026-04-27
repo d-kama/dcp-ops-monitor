@@ -10,7 +10,7 @@ from .exceptions import (
 )
 from .indicator_object import OpsIndicators
 from .indicators_calculator import calculate_indicators
-from .notification_interface import INotifier
+from .notifier import INotifier
 
 __all__ = [
     # Models
