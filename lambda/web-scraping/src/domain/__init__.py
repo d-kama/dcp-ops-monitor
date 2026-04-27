@@ -12,12 +12,10 @@ from .exceptions import (
     WebScrapingFailed,
 )
 from .scraper import IScraper
-from .scraping_object import ScrapingParams
 
 __all__ = [
     # Models
     "AssetEvaluation",
-    "ScrapingParams",
     "AssetRecord",
     # Interfaces
     "IScraper",

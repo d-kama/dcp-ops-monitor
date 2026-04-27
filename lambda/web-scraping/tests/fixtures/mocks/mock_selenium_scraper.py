@@ -1,4 +1,5 @@
-from src.domain import AssetEvaluation, IScraper, ScrapingFailed, ScrapingParams
+from src.config import ScrapingParameters
+from src.domain import AssetEvaluation, IScraper, ScrapingFailed
 
 
 class MockSeleniumScraper(IScraper):
@@ -10,7 +11,7 @@ class MockSeleniumScraper(IScraper):
     def __init__(
         self,
         mock_products: dict[str, AssetEvaluation] | None = None,
-        scraping_params: ScrapingParams | None = None,
+        scraping_parameters: ScrapingParameters | None = None,
         chrome_binary_location: str = "",
         chrome_driver_path: str = "",
         should_fail: bool = False,
@@ -20,13 +21,13 @@ class MockSeleniumScraper(IScraper):
 
         Args:
             mock_products: 返却する商品別資産情報（指定しない場合はデフォルト値）
-            scraping_params: スクレイピングパラメータ（使用しない）
+            scraping_parameters: スクレイピングパラメータ（使用しない）
             chrome_binary_location: Chromeバイナリの場所（使用しない）
             chrome_driver_path: ChromeDriverのパス（使用しない）
             should_fail: Trueの場合、スクレイピング失敗を模擬する
             should_fail_extraction: Trueの場合、抽出失敗を模擬する
         """
-        self.scraping_params = scraping_params
+        self.scraping_parameters = scraping_parameters
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
         self.mock_products = mock_products
