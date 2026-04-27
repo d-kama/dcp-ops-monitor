@@ -1,25 +1,25 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
-from shared.domain.asset_object import AssetEvaluation
+from shared.domain.asset_evaluation import AssetEvaluation
 
-from .asset_interface import IAssetRepository
+from .asset_evaluation_repository import IAssetEvaluationRepository
 from .exceptions import (
     AssetRetrievalFailed,
     NotificationFailed,
     SummaryNotificationFailed,
 )
-from .indicator_object import OpsIndicators
-from .indicators_calculator import calculate_indicators
-from .notification_interface import INotifier
+from .notifier import INotifier
+from .ops_indicators import OpsIndicators
+from .ops_indicators_service import calculate_ops_indicators
 
 __all__ = [
     # Models
     "AssetEvaluation",
     "OpsIndicators",
     # Domain Services
-    "calculate_indicators",
+    "calculate_ops_indicators",
     # Interfaces
-    "IAssetRepository",
+    "IAssetEvaluationRepository",
     "INotifier",
     # Exceptions
     "SummaryNotificationFailed",

@@ -3,7 +3,7 @@
 from datetime import date
 
 from src.config.settings import get_logger
-from src.domain import AssetEvaluation, IAssetRepository, INotifier, calculate_indicators
+from src.domain import AssetEvaluation, IAssetEvaluationRepository, INotifier, calculate_ops_indicators
 
 from .message_formatter import format_summary_message
 
@@ -15,7 +15,7 @@ class SummaryNotificationService:
 
     def __init__(
         self,
-        asset_repository: IAssetRepository,
+        asset_repository: IAssetEvaluationRepository,
         notifier: INotifier,
     ) -> None:
         """サマリ通知サービスを初期化
@@ -42,7 +42,7 @@ class SummaryNotificationService:
         logger.info("資産情報を取得しました")
 
         # 運用指標を計算
-        indicators = calculate_indicators(total)
+        indicators = calculate_ops_indicators(total)
         logger.info("運用指標を計算しました", indicators=indicators.model_dump())
 
         # 直近1週間の資産評価額推移を取得・計算

@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from datetime import date
 
-from shared.domain.asset_object import AssetEvaluation
+from shared.domain.asset_evaluation import AssetEvaluation
 
 
-class IAssetRepository(ABC):
-    """資産リポジトリインターフェース"""
+class IAssetEvaluationRepository(ABC):
+    """資産評価リポジトリインターフェース"""
 
     @abstractmethod
     def get_latest_assets(self) -> dict[str, AssetEvaluation]:

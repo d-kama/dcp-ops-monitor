@@ -20,9 +20,9 @@
 
 | モジュール | 内容 |
 |---|---|
-| `domain/asset_object.py` | `AssetEvaluation` ドメインモデル（両 Lambda で同じ資産データを扱うため） |
-| `domain/asset_record_object.py` | `AssetRecord` ドメインモデル（Google Spreadsheet への蓄積フォーマット） |
-| `domain/asset_record_interface.py` | `IAssetRecordRepository`（Spreadsheet への読み書きを抽象化） |
+| `domain/asset_evaluation.py` | `AssetEvaluation` ドメインモデル（両 Lambda で同じ資産データを扱うため） |
+| `domain/asset_record.py` | `AssetRecord` ドメインモデル（Google Spreadsheet への蓄積フォーマット） |
+| `domain/asset_record_repository.py` | `IAssetRecordRepository`（Spreadsheet への読み書きを抽象化） |
 | `infrastructure/ssm_parameter.py` | SSM Parameter Store クライアント |
 | `config/base_settings.py` | Logger・BaseSettings（aws-lambda-powertools ベース） |
 

@@ -1,7 +1,7 @@
 import pytest
 
 from src.domain import AssetEvaluation, AssetRetrievalFailed
-from tests.fixtures.mocks import MockAssetRepository, MockNotifier
+from tests.fixtures.mocks import MockAssetEvaluationRepository, MockNotifier
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def test_main__e2e_with_mocks(sample_assets):
     # given
     from src.presentation.summary_notification_handler import main
 
-    repo = MockAssetRepository(assets=sample_assets)
+    repo = MockAssetEvaluationRepository(assets=sample_assets)
     notifier = MockNotifier()
 
     # when
@@ -52,7 +52,7 @@ def test_main__asset_not_found_raises():
     # given
     from src.presentation.summary_notification_handler import main
 
-    repo = MockAssetRepository(should_fail=True)
+    repo = MockAssetEvaluationRepository(should_fail=True)
     notifier = MockNotifier()
 
     # when, then

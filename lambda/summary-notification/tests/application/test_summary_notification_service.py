@@ -4,7 +4,7 @@ import pytest
 
 from src.application import SummaryNotificationService
 from src.domain import AssetEvaluation, AssetRetrievalFailed
-from tests.fixtures.mocks import MockAssetRepository, MockNotifier
+from tests.fixtures.mocks import MockAssetEvaluationRepository, MockNotifier
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ class TestSummaryNotificationService:
     def test_send_summary__success(self, sample_assets):
         """正常にサマリ通知を送信できる"""
         # given
-        repo = MockAssetRepository(assets=sample_assets)
+        repo = MockAssetEvaluationRepository(assets=sample_assets)
         notifier = MockNotifier()
         service = SummaryNotificationService(asset_repository=repo, notifier=notifier)
 
@@ -72,7 +72,7 @@ class TestSummaryNotificationService:
     def test_send_summary__asset_not_found_raises(self):
         """資産情報がない場合 AssetRetrievalFailed が発生する"""
         # given
-        repo = MockAssetRepository(should_fail=True)
+        repo = MockAssetEvaluationRepository(should_fail=True)
         notifier = MockNotifier()
         service = SummaryNotificationService(asset_repository=repo, notifier=notifier)
 
@@ -85,7 +85,7 @@ class TestSummaryNotificationService:
     def test_send_summary__message_contains_indicators(self, sample_assets):
         """送信メッセージに運用指標が含まれる"""
         # given
-        repo = MockAssetRepository(assets=sample_assets)
+        repo = MockAssetEvaluationRepository(assets=sample_assets)
         notifier = MockNotifier()
         service = SummaryNotificationService(asset_repository=repo, notifier=notifier)
 
@@ -102,7 +102,7 @@ class TestSummaryNotificationService:
         """送信メッセージに資産評価額推移が含まれる"""
         # given
         weekly_assets = _make_weekly_assets()
-        repo = MockAssetRepository(assets=sample_assets, weekly_assets=weekly_assets)
+        repo = MockAssetEvaluationRepository(assets=sample_assets, weekly_assets=weekly_assets)
         notifier = MockNotifier()
         service = SummaryNotificationService(asset_repository=repo, notifier=notifier)
 

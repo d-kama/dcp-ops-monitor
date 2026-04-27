@@ -3,8 +3,9 @@ from tempfile import mkdtemp
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from src.config import ScrapingParameters
 from src.config.settings import get_logger
-from src.domain import AssetEvaluation, IScraper, ScrapingFailed, ScrapingParams
+from src.domain import AssetEvaluation, IScraper, ScrapingFailed
 
 logger = get_logger()
 
@@ -14,18 +15,18 @@ class SeleniumScraper(IScraper):
 
     def __init__(
         self,
-        scraping_params: ScrapingParams,
+        scraping_parameters: ScrapingParameters,
         chrome_binary_location: str = "/opt/chrome/chrome",
         chrome_driver_path: str = "/opt/chromedriver",
     ) -> None:
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
-        self.user_agent = scraping_params.user_agent
+        self.user_agent = scraping_parameters.user_agent
         self.driver = self._get_driver()
-        self.user_id = scraping_params.login_user_id
-        self.password = scraping_params.login_password
-        self.birthdate = scraping_params.login_birthdate
-        self.start_url = scraping_params.start_url
+        self.user_id = scraping_parameters.login_user_id
+        self.password = scraping_parameters.login_password
+        self.birthdate = scraping_parameters.login_birthdate
+        self.start_url = scraping_parameters.start_url
 
     def _get_driver(self) -> webdriver.Chrome:
         chrome_options = webdriver.ChromeOptions()
