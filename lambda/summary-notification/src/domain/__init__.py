@@ -2,7 +2,7 @@
 
 from shared.domain.asset_evaluation import AssetEvaluation
 
-from .asset_interface import IAssetRepository
+from .asset_evaluation_repository import IAssetEvaluationRepository
 from .exceptions import (
     AssetRetrievalFailed,
     NotificationFailed,
@@ -19,7 +19,7 @@ __all__ = [
     # Domain Services
     "calculate_indicators",
     # Interfaces
-    "IAssetRepository",
+    "IAssetEvaluationRepository",
     "INotifier",
     # Exceptions
     "SummaryNotificationFailed",

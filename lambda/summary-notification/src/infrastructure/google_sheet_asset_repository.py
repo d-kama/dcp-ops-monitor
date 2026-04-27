@@ -7,14 +7,14 @@ from google.oauth2.service_account import Credentials
 from gspread.utils import rowcol_to_a1
 
 from src.config.settings import get_logger
-from src.domain import AssetEvaluation, AssetRetrievalFailed, IAssetRepository
+from src.domain import AssetEvaluation, AssetRetrievalFailed, IAssetEvaluationRepository
 
 logger = get_logger()
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
 
-class GoogleSheetAssetRepository(IAssetRepository):
+class GoogleSheetAssetRepository(IAssetEvaluationRepository):
     """Google Spreadsheet から資産情報を取得するリポジトリ"""
 
     HEADER_ROW = 1

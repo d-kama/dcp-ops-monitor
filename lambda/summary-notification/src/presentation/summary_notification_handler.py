@@ -2,7 +2,7 @@
 
 from src.application import SummaryNotificationService
 from src.config.settings import get_logger, get_settings
-from src.domain import IAssetRepository, INotifier
+from src.domain import IAssetEvaluationRepository, INotifier
 from src.infrastructure import (
     GoogleSheetAssetRepository,
     LineNotifier,
@@ -14,7 +14,7 @@ logger = get_logger()
 
 
 def main(
-    asset_repository: IAssetRepository | None = None,
+    asset_repository: IAssetEvaluationRepository | None = None,
     notifier: INotifier | None = None,
 ) -> None:
     """メイン処理

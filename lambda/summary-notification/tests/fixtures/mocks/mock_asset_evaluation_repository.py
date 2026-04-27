@@ -1,12 +1,12 @@
-"""テスト用 Mock Asset Repository"""
+"""テスト用 Mock Asset Evaluation Repository"""
 
 from datetime import date
 
-from src.domain import AssetEvaluation, AssetRetrievalFailed, IAssetRepository
+from src.domain import AssetEvaluation, AssetRetrievalFailed, IAssetEvaluationRepository
 
 
-class MockAssetRepository(IAssetRepository):
-    """テスト用 Mock 資産リポジトリ
+class MockAssetEvaluationRepository(IAssetEvaluationRepository):
+    """テスト用 Mock 資産評価リポジトリ
 
     get_latest_assets() / get_weekly_assets() の呼び出しを記録し、テストで検証可能にする
     """

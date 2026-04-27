@@ -3,7 +3,7 @@
 from datetime import date
 
 from src.config.settings import get_logger
-from src.domain import AssetEvaluation, IAssetRepository, INotifier, calculate_indicators
+from src.domain import AssetEvaluation, IAssetEvaluationRepository, INotifier, calculate_indicators
 
 from .message_formatter import format_summary_message
 
@@ -15,7 +15,7 @@ class SummaryNotificationService:
 
     def __init__(
         self,
-        asset_repository: IAssetRepository,
+        asset_repository: IAssetEvaluationRepository,
         notifier: INotifier,
     ) -> None:
         """サマリ通知サービスを初期化
