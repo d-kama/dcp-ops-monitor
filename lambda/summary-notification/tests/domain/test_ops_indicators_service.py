@@ -1,7 +1,7 @@
 from datetime import date
 
-from src.domain import AssetEvaluation, calculate_indicators
-from src.domain.indicators_calculator import (
+from src.domain import AssetEvaluation, calculate_ops_indicators
+from src.domain.ops_indicators_service import (
     calculate_annual_yield_rate,
     calculate_total_amount_at_60age,
     calculate_year_diff,
@@ -59,8 +59,8 @@ class TestCalculateTotalAmountAt60age:
         assert isinstance(result, int)
 
 
-class TestCalculateIndicators:
-    def test_calculate_indicators__returns_valid_indicators(self):
+class TestCalculateOpsIndicators:
+    def test_calculate_ops_indicators__returns_valid_indicators(self):
         """正常な資産情報から運用指標を計算できる"""
         total_assets = AssetEvaluation(
             cumulative_contributions=900_000,
@@ -69,7 +69,7 @@ class TestCalculateIndicators:
         )
         today = date(2026, 2, 5)
 
-        result = calculate_indicators(total_assets, today=today)
+        result = calculate_ops_indicators(total_assets, today=today)
 
         assert result.operation_years > 9.0
         assert result.actual_yield_rate > 0
