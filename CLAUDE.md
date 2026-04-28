@@ -8,21 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## セットアップ
 
-```bash
-# ツールインストール
-mise trust && mise install
-
-# Node 依存関係 + pre-commit フック
-npm ci && npx lefthook install
-
-# Python 依存関係（uv workspace）
-cd lambda && uv sync
-
-# 環境変数（Docker Compose 用）
-cp .env.example .env.local
-```
-
-CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOUNT-NUMBER/REGION`
+セットアップ手順は [CONTRIBUTING.md](docs/CONTRIBUTING.md#セットアップ) を参照。
 
 ## 開発コマンド
 
