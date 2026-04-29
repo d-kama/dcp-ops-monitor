@@ -2,7 +2,7 @@
 mise.file = ".env"
 
 [tools]
-python = "3.13.1"
+python = "3.13.13"
 node = "22.22"
 uv = "latest"
 

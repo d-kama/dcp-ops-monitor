@@ -16,7 +16,6 @@ MISE="$HOME/.local/bin/mise"
 echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
 # mise install もフルパスで実行
-export MISE_PYTHON_GITHUB_ATTESTATIONS=false
 $MISE trust && $MISE install
 
 # mise経由でnpmが使えるようにactivate
