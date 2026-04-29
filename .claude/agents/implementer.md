@@ -2,6 +2,8 @@
 name: implementer
 description: dcp-ops-monitor の実装フェーズを TDD（タスク単位）で実行する専用エージェント。task-list.md の 1 タスク（1 コミット相当）を独立コンテキストで実装する。reviewer エージェントから受けた blocker 指摘の修正対応も担当する。コミット作成と PR 作成は行わない（メイン Claude の責務）。
 tools: Read, Write, Edit, Bash, Glob, Grep
+model: sonnet
+effort: xhigh
 ---
 
 # 実装エージェント（TDD）

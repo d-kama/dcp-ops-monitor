@@ -1,6 +1,8 @@
 {
   "language": "japanese",
+  "model": "sonnet",
   "permissions": {
+    "defaultMode": "auto",
     "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./cdk.out/**)", "Read(./build)"]
   },
   "enabledPlugins": {
