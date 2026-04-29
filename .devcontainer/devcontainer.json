@@ -6,8 +6,6 @@
     "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
-  "runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
-  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
   "remoteUser": "vscode",
   "mounts": [
     "source=claude-code-config,target=/home/vscode/.claude,type=volume",

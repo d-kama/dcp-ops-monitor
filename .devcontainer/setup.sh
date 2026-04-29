@@ -1,10 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-# root ユーザーでマウントされる為、書き込み可能に権限を上書き
-sudo chown -R "$(id -u):$(id -g)" \
-  "$HOME/.config" \
-  "$HOME/.claude"
+# root ユーザーでマウントされる為、存在するディレクトリのみ権限を書き込み可能に上書き
+for dir in "$HOME/.config" "$HOME/.claude"; do
+  [ -d "$dir" ] && sudo chown -R "$(id -u):$(id -g)" "$dir"
+done
 
 # bashrc に追加
 echo 'eval "$(mise activate bash)"' >> ~/.bashrc
