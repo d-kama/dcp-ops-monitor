@@ -80,9 +80,9 @@ class SeleniumScraper(IScraper):
             input_user_id = self.driver.find_element(By.NAME, "userId")
             input_password = self.driver.find_element(By.NAME, "password")
             input_birthdate = self.driver.find_element(By.NAME, "birthDate")
-            input_user_id.send_keys(self.user_id)
-            input_password.send_keys(self.password)
-            input_birthdate.send_keys(self.birthdate)
+            input_user_id.send_keys(self.user_id.get_secret_value())
+            input_password.send_keys(self.password.get_secret_value())
+            input_birthdate.send_keys(self.birthdate.get_secret_value())
 
             btn_login = self.driver.find_element(By.ID, "btnLogin")
             btn_login.submit()
