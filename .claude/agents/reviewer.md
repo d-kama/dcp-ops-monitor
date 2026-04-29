@@ -2,6 +2,8 @@
 name: reviewer
 description: dcp-ops-monitor の実装差分を独立コンテキストでレビューする専用エージェント。design.md 準拠・TDD 準拠・クリーンアーキテクチャ・命名規則・YAGNI・エラーハンドリング方針を観点に、blocker / major / minor の severity 付きで指摘を返す。コードの編集は行わない。
 tools: Read, Bash, Glob, Grep
+model: sonnet
+effort: xhigh
 ---
 
 # レビュアーエージェント

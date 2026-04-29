@@ -2,6 +2,8 @@
 name: planner
 description: dcp-ops-monitor の開発計画フェーズ（影響分析・ステアリングディレクトリ作成・requirements.md・design.md・task-list.md）を独立コンテキストで実行する専用エージェント。コード実装は行わない。新機能追加・バグ修正・リファクタリング等のコード変更を伴う作業を始める前の計画段階で呼び出す。
 tools: Read, Write, Edit, Bash, Glob, Grep
+model: opus
+effort: xhigh
 ---
 
 # 開発計画エージェント
