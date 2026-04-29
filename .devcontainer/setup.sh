@@ -6,20 +6,14 @@ sudo chown -R "$(id -u):$(id -g)" \
   "$HOME/.config" \
   "$HOME/.claude"
 
-# mise インストール
-curl https://mise.run | sh
-
-# フルパスで mise を使う
-MISE="$HOME/.local/bin/mise"
-
 # bashrc に追加
-echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
+echo 'eval "$(mise activate bash)"' >> ~/.bashrc
 
 # mise install もフルパスで実行
-$MISE trust && $MISE install
+mise trust && mise install
 
 # mise経由でnpmが使えるようにactivate
-eval "$($MISE activate bash)"
+eval "$(mise activate bash)"
 
 # Node 依存関係 + pre-commit フック
 npm ci && npx lefthook install
