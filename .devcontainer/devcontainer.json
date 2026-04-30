@@ -3,8 +3,10 @@
   "features": {
     "ghcr.io/devcontainers-extra/features/mise:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
+  "runArgs": ["--privileged"],
   "postCreateCommand": "bash .devcontainer/setup.sh",
   "remoteUser": "vscode",
   "mounts": [
