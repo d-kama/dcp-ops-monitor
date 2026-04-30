@@ -15,6 +15,12 @@ description: 計画フェーズで作成された task-list.md に基づき、TD
 ## 制御フロー
 
 ```
+# 事前準備: 作業ブランチの作成
+現在のブランチが main / master の場合:
+  branch_name = ユーザー指定 > ステアリングディレクトリ名 > issue番号（task-list.md から抽出）の優先順で決定
+  git switch -c {branch_name} で作業ブランチを作成してから実装を開始する
+既に main / master 以外のブランチにいる場合: そのまま継続
+
 task_list = read(task-list.md)
 for task in task_list:
     1. implementer サブエージェントを起動（mode=initial、対象タスクを渡す）
@@ -34,6 +40,7 @@ for task in task_list:
 
 ## メイン Claude の責務
 
+- 実装開始前に main / master から作業ブランチを作成する
 - task-list.md の読み込みと進捗管理
 - 各サブエージェントの起動と入出力受け渡し
 - ループ回数の管理（上限 3 回）
