@@ -1,27 +1,33 @@
+from datetime import date
+
 import pytest
 
-from src.domain import AssetEvaluation, AssetRetrievalFailed
-from tests.fixtures.mocks import MockAssetEvaluationRepository, MockNotifier
+from src.domain import AssetRecord, AssetRetrievalFailed
+from tests.fixtures.mocks import MockAssetRecordReader, MockNotifier
 
 
 @pytest.fixture
-def sample_assets() -> dict[str, AssetEvaluation]:
-    """テスト用の資産情報"""
-    return {
-        "商品A": AssetEvaluation(
+def sample_records() -> list[AssetRecord]:
+    """テスト用の資産レコード"""
+    return [
+        AssetRecord(
+            date=date(2026, 2, 14),
+            product="商品A",
             cumulative_contributions=450_000,
             gains_or_losses=150_000,
             asset_valuation=600_000,
         ),
-        "商品B": AssetEvaluation(
+        AssetRecord(
+            date=date(2026, 2, 14),
+            product="商品B",
             cumulative_contributions=450_000,
             gains_or_losses=150_000,
             asset_valuation=600_000,
         ),
-    }
+    ]
 
 
-def test_main__e2e_with_mocks(sample_assets):
+def test_main__e2e_with_mocks(sample_records):
     """main 関数の E2E テスト（Mock を使用）
 
     資産取得→指標計算→通知送信の全フローが正常に完了することを確認する
@@ -29,14 +35,14 @@ def test_main__e2e_with_mocks(sample_assets):
     # given
     from src.presentation.summary_notification_handler import main
 
-    repo = MockAssetEvaluationRepository(assets=sample_assets)
+    repo = MockAssetRecordReader(latest_records=sample_records)
     notifier = MockNotifier()
 
     # when
     main(asset_repository=repo, notifier=notifier)
 
     # then
-    assert repo.get_called
+    assert repo.get_latest_called
     assert notifier.notify_called
     assert len(notifier.messages_sent) == 1
 
@@ -52,7 +58,7 @@ def test_main__asset_not_found_raises():
     # given
     from src.presentation.summary_notification_handler import main
 
-    repo = MockAssetEvaluationRepository(should_fail=True)
+    repo = MockAssetRecordReader(latest_records=[])
     notifier = MockNotifier()
 
     # when, then
