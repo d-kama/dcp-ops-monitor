@@ -2,10 +2,10 @@
 
 from shared.domain.asset_evaluation import AssetEvaluation
 from shared.domain.asset_record import AssetRecord
-from shared.domain.asset_record_repository import IAssetRecordRepository
 from shared.domain.exceptions import AssetRecordError
 
 from .artifact_repository import IArtifactRepository
+from .asset_record_writer import IAssetRecordWriter
 from .exceptions import (
     ArtifactUploadError,
     ScrapingFailed,
@@ -20,7 +20,7 @@ __all__ = [
     # Interfaces
     "IScraper",
     "IArtifactRepository",
-    "IAssetRecordRepository",
+    "IAssetRecordWriter",
     # Exceptions
     "ArtifactUploadError",
     "ScrapingFailed",
