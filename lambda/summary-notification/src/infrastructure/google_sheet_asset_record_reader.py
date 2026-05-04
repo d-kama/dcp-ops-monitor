@@ -63,10 +63,6 @@ class GoogleSheetAssetRecordReader(IAssetRecordReader):
                 i + self.HEADER_ROW + 1 for i, d in enumerate(data_dates) if date.fromisoformat(d) > cutoff_dt
             ]
             return self._batch_get_records(headers, target_rows)
-        except AssetRetrievalFailed:
-            raise
-        except ValueError:
-            raise
         except Exception as e:
             raise AssetRetrievalFailed.during_fetching() from e
 
