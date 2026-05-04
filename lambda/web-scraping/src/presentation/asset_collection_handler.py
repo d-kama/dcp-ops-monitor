@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from src.application import WebScrapingService
 from src.config import ScrapingParameters
 from src.config.settings import get_logger, get_settings
-from src.domain import AssetRecord, IAssetRecordRepository, IScraper
+from src.domain import AssetRecord, IAssetRecordWriter, IScraper
 from src.infrastructure import (
     GoogleSheetAssetRecordRepository,
     S3ArtifactRepository,
@@ -21,13 +21,13 @@ logger = get_logger()
 
 def main(
     scraper: Optional[IScraper] = None,
-    asset_record_repository: Optional[IAssetRecordRepository] = None,
+    asset_record_repository: Optional[IAssetRecordWriter] = None,
 ) -> None:
     """メイン処理
 
     Args:
         scraper (Optional[IScraper]): スクレイパー（テスト時にMockを注入可能）
-        asset_record_repository (Optional[IAssetRecordRepository]): 資産レコードリポジトリ（テスト時にMockを注入可能）
+        asset_record_repository (Optional[IAssetRecordWriter]): 資産レコードライター（テスト時にMockを注入可能）
 
     Raises:
         ScrapingFailed: スクレイピングまたは資産情報抽出処理失敗時

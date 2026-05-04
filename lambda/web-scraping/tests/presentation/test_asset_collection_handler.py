@@ -44,10 +44,10 @@ def test_main_e2e_with_mocks(valid_products):
     """
     # given
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordRepository, MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumScraper
 
     scraper = MockSeleniumScraper(mock_products=valid_products)
-    asset_record_repo = MockAssetRecordRepository()
+    asset_record_repo = MockAssetRecordWriter()
 
     # when
     main(scraper=scraper, asset_record_repository=asset_record_repo)
@@ -68,10 +68,10 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordRepository, MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumScraper
 
     scraper = MockSeleniumScraper(should_fail=True)
-    asset_record_repo = MockAssetRecordRepository()
+    asset_record_repo = MockAssetRecordWriter()
 
     # when, then
     with pytest.raises(ScrapingFailed) as exc_info:
@@ -101,10 +101,10 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordRepository, MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumScraper
 
     scraper = MockSeleniumScraper(should_fail_extraction=True)
-    asset_record_repo = MockAssetRecordRepository()
+    asset_record_repo = MockAssetRecordWriter()
 
     # when, then
     with pytest.raises(ScrapingFailed) as exc_info:

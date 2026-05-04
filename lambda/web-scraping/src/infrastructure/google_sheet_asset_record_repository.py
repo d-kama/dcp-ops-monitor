@@ -4,15 +4,15 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 from src.config.settings import get_logger
-from src.domain import AssetRecord, AssetRecordError, IAssetRecordRepository
+from src.domain import AssetRecord, AssetRecordError, IAssetRecordWriter
 
 logger = get_logger()
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 
-class GoogleSheetAssetRecordRepository(IAssetRecordRepository):
-    """Google Spreadsheet を使った IAssetRecordRepository 実装"""
+class GoogleSheetAssetRecordRepository(IAssetRecordWriter):
+    """Google Spreadsheet を使った IAssetRecordWriter 実装"""
 
     def __init__(self, spreadsheet_id: str, sheet_name: str, credentials: dict) -> None:
         """Google Spreadsheet クライアントを初期化

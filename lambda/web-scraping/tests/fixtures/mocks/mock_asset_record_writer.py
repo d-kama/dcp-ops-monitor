@@ -1,8 +1,8 @@
-from src.domain import AssetRecord, IAssetRecordRepository
+from src.domain import AssetRecord, IAssetRecordWriter
 
 
-class MockAssetRecordRepository(IAssetRecordRepository):
-    """IAssetRecordRepository の Mock 実装（E2E テスト用）"""
+class MockAssetRecordWriter(IAssetRecordWriter):
+    """IAssetRecordWriter の Mock 実装（E2E テスト用）"""
 
     def __init__(self) -> None:
         self.saved_records: list[AssetRecord] = []
