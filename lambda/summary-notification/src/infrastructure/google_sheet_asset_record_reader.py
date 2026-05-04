@@ -73,13 +73,18 @@ class GoogleSheetAssetRecordReader(IAssetRecordReader):
         ranges = [f"{rowcol_to_a1(row, 1)}:{rowcol_to_a1(row, num_cols)}" for row in target_rows]
         results = self.worksheet.batch_get(ranges)
         rows = [dict(zip(headers, row[0])) for row in results if row and row[0]]
-        return [
-            AssetRecord(
-                date=date.fromisoformat(r["date"]),
-                product=r["product"],
-                asset_valuation=int(r["asset_valuation"]),
-                cumulative_contributions=int(r["cumulative_contributions"]),
-                gains_or_losses=int(r["gains_or_losses"]),
-            )
-            for r in rows
-        ]
+        records = []
+        for r in rows:
+            try:
+                records.append(
+                    AssetRecord(
+                        date=date.fromisoformat(r["date"]),
+                        product=r["product"],
+                        asset_valuation=int(r["asset_valuation"]),
+                        cumulative_contributions=int(r["cumulative_contributions"]),
+                        gains_or_losses=int(r["gains_or_losses"]),
+                    )
+                )
+            except (KeyError, ValueError) as e:
+                raise ValueError(f"Invalid data format in row {r}: {e}") from e
+        return records
