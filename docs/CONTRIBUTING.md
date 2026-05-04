@@ -94,7 +94,7 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 | `infrastructure/ssm_parameter.py` | SSM Parameter Store クライアント |
 | `config/base_settings.py` | Logger・BaseSettings（aws-lambda-powertools ベース） |
 
-shared はドメイン値オブジェクトのみを共有し、リポジトリ IF は各 Lambda の `domain/` 層が個別に定義する（ISP: Interface Segregation Principle）。`web-scraping` は write 専用の `IAssetRecordWriter`、`summary-notification` は read 専用の `IAssetRecordReader` を持ち、互いの IF に依存しない。
+リポジトリ IF は各 Lambda の `domain/` 層が個別に定義する（ISP: Interface Segregation Principle）。`web-scraping` は write 専用の `IAssetRecordWriter`、`summary-notification` は read 専用の `IAssetRecordReader` を持ち、互いの IF に依存しない。
 
 ---
 
