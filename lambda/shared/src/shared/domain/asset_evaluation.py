@@ -1,12 +1,6 @@
-from __future__ import annotations
-
 from collections.abc import Iterable
-from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
-
-if TYPE_CHECKING:
-    from shared.domain.asset_record import AssetRecord
 
 
 class AssetEvaluation(BaseModel):
@@ -54,31 +48,6 @@ class AssetEvaluation(BaseModel):
             gains_or_losses=cls._parse_yen_amount(gains_or_losses_str),
             asset_valuation=cls._parse_yen_amount(asset_valuation_str),
         )
-
-    @classmethod
-    def from_records(cls, records: Iterable[AssetRecord]) -> dict[str, AssetEvaluation]:
-        """AssetRecord のリストから商品名 → AssetEvaluation のマッピングを生成する
-
-        前提:
-        - 入力されるレコードは同一日付のものとする（日付チェックは行わない、呼び出し側責務）
-        - 商品名（product）が重複する場合は最後のレコードで上書きされる
-          （実運用上は write 側の日付単位 upsert により重複は発生しない）
-        - 空入力の場合は空 dict を返す（呼び出し側で空を判定し例外送出する）
-
-        Args:
-            records: AssetRecord の iterable
-
-        Returns:
-            dict[str, AssetEvaluation]: 商品名 → 資産評価のマッピング
-        """
-        return {
-            r.product: cls(
-                cumulative_contributions=r.cumulative_contributions,
-                gains_or_losses=r.gains_or_losses,
-                asset_valuation=r.asset_valuation,
-            )
-            for r in records
-        }
 
     @staticmethod
     def _parse_yen_amount(yen_str: str) -> int:

@@ -44,7 +44,7 @@ class SummaryNotificationService:
             NotificationFailed: 通知送信失敗時
         """
         latest_records = self.asset_repository.get_latest_records()
-        products = AssetEvaluation.from_records(latest_records)
+        products = AssetRecord.to_evaluation_map(latest_records)
         if not products:
             raise AssetRetrievalFailed.no_assets_in_spreadsheet()
 
@@ -69,7 +69,7 @@ class SummaryNotificationService:
         """週次レコードから日毎の資産評価額と前日比を算出する
 
         1. 日付単位にグルーピング
-        2. 各日について AssetEvaluation.from_records → aggregate で日次合計を取得
+        2. 各日について AssetRecord.to_evaluation_map → aggregate で日次合計を取得
         3. 日付昇順で前日比を計算し、最後に降順に反転して返す
 
         Args:
@@ -84,7 +84,7 @@ class SummaryNotificationService:
 
         valuations: dict[date, int] = {}
         for d in sorted(records_by_date.keys()):
-            day_products = AssetEvaluation.from_records(records_by_date[d])
+            day_products = AssetRecord.to_evaluation_map(records_by_date[d])
             valuations[d] = AssetEvaluation.aggregate(day_products.values()).asset_valuation
 
         result: list[tuple[date, int, int | None]] = []
