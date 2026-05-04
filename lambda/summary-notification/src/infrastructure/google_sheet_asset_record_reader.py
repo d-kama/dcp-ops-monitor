@@ -60,7 +60,7 @@ class GoogleSheetAssetRecordReader(IAssetRecordReader):
             latest_dt = date.fromisoformat(max(data_dates))
             cutoff_dt = latest_dt - timedelta(days=days)
             target_rows = [
-                i + self.HEADER_ROW + 1 for i, d in enumerate(data_dates) if date.fromisoformat(d) > cutoff_dt
+                i + self.HEADER_ROW + 1 for i, d in enumerate(data_dates) if d and date.fromisoformat(d) > cutoff_dt
             ]
             return self._batch_get_records(headers, target_rows)
         except Exception as e:
