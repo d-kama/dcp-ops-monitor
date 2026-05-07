@@ -3,7 +3,7 @@ import pytest
 from src.domain import NotificationFailed
 from src.infrastructure import LineNotifier
 
-LINE_API_URL = "https://api.line.me/v2/bot/message/push"
+LINE_API_URL = "http://test.invalid/line/messages"
 LINE_TOKEN = "test-token"
 
 
