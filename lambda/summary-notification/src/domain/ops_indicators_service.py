@@ -75,6 +75,8 @@ def calculate_annual_yield_rate(
     Returns:
         float: 年間利回り（小数点以下3桁）
     """
+    if cumulative_contributions <= 0 or operation_years <= 0:
+        return 0.0
     return round(gains_or_losses / cumulative_contributions / operation_years, 3)
 
 
@@ -96,6 +98,10 @@ def calculate_total_amount_at_60age(
         int: 想定受取額
     """
     years_to_60age = calculate_year_diff(start_dt=today, end_dt=RETIREMENT_DATE)
-    total = int(ANNUAL_CONTRIBUTION * (((1 + yield_rate) ** years_to_60age - 1) / yield_rate))
-    total += asset_valuation
-    return total
+    if years_to_60age <= 0:
+        return asset_valuation
+    if yield_rate == 0:
+        future_contributions = ANNUAL_CONTRIBUTION * years_to_60age
+    else:
+        future_contributions = ANNUAL_CONTRIBUTION * (((1 + yield_rate) ** years_to_60age - 1) / yield_rate)
+    return int(future_contributions) + asset_valuation

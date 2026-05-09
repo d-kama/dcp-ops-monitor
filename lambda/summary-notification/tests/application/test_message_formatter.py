@@ -81,3 +81,45 @@ class TestFormatSummaryMessage:
         result = format_summary_message(total, indicators, [])
 
         assert "資産評価額推移" not in result
+
+    def test_format_summary_message__output_matches_expected_exactly(self):
+        """メッセージ全体が期待する文字列と完全一致する"""
+        total = AssetEvaluation(
+            cumulative_contributions=2_280_000,
+            gains_or_losses=456_000,
+            asset_valuation=2_736_000,
+        )
+        indicators = OpsIndicators(
+            operation_years=9.4,
+            actual_yield_rate=0.051,
+            total_amount_at_60age=6_540_000,
+        )
+        weekly_valuations = [
+            (date(2025, 12, 5), 2_736_000, 0),
+            (date(2025, 12, 4), 2_736_000, 6_000),
+            (date(2025, 12, 3), 2_730_000, 5_000),
+            (date(2025, 12, 2), 2_725_000, 5_000),
+            (date(2025, 12, 1), 2_720_000, None),
+        ]
+        expected = (
+            "確定拠出年金 運用状況通知Bot\n"
+            "\n"
+            "拠出金額累計: 2,280,000円\n"
+            "評価損益: 456,000円\n"
+            "資産評価額: 2,736,000円\n"
+            "\n"
+            "運用年数: 9.4年\n"
+            "運用利回り: 0.051\n"
+            "想定受取額(60歳): 6,540,000円\n"
+            "\n"
+            "資産評価額推移（直近1週間）\n"
+            "2025-12-05: 2,736,000円 +0円\n"
+            "2025-12-04: 2,736,000円 +6,000円\n"
+            "2025-12-03: 2,730,000円 +5,000円\n"
+            "2025-12-02: 2,725,000円 +5,000円\n"
+            "2025-12-01: 2,720,000円 -\n"
+        )
+
+        result = format_summary_message(total, indicators, weekly_valuations)
+
+        assert result == expected

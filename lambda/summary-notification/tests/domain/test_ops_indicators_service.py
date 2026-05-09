@@ -46,6 +46,33 @@ class TestCalculateAnnualYieldRate:
         )
         assert result == -0.02
 
+    def test_calculate_annual_yield_rate__zero_cumulative_contributions_returns_zero(self):
+        """拠出金額累計が0の場合は0.0を返す"""
+        result = calculate_annual_yield_rate(
+            cumulative_contributions=0,
+            gains_or_losses=100_000,
+            operation_years=5.0,
+        )
+        assert result == 0.0
+
+    def test_calculate_annual_yield_rate__negative_cumulative_contributions_returns_zero(self):
+        """拠出金額累計が負の場合は0.0を返す"""
+        result = calculate_annual_yield_rate(
+            cumulative_contributions=-1,
+            gains_or_losses=100_000,
+            operation_years=5.0,
+        )
+        assert result == 0.0
+
+    def test_calculate_annual_yield_rate__zero_operation_years_returns_zero(self):
+        """運用年数が0の場合は0.0を返す"""
+        result = calculate_annual_yield_rate(
+            cumulative_contributions=1_000_000,
+            gains_or_losses=100_000,
+            operation_years=0.0,
+        )
+        assert result == 0.0
+
 
 class TestCalculateTotalAmountAt60age:
     def test_calculate_total_amount_at_60age__positive_yield(self):
@@ -57,6 +84,35 @@ class TestCalculateTotalAmountAt60age:
         )
         assert result > 1_200_000  # 積立分 + 現在の資産
         assert isinstance(result, int)
+
+    def test_calculate_total_amount_at_60age__zero_yield_uses_simple_interest(self):
+        """yield_rate=0.0 のとき単利近似で想定受取額を計算する"""
+        asset_valuation = 1_000_000
+        today = date(2026, 10, 1)
+        # RETIREMENT_DATE = date(2046, 10, 1) までちょうど 20 年
+        years_to_60age = calculate_year_diff(start_dt=today, end_dt=date(2046, 10, 1))
+        expected = int(240_000 * years_to_60age) + asset_valuation
+
+        result = calculate_total_amount_at_60age(
+            yield_rate=0.0,
+            asset_valuation=asset_valuation,
+            today=today,
+        )
+
+        assert result == expected
+        assert isinstance(result, int)
+
+    def test_calculate_total_amount_at_60age__after_retirement_returns_asset_valuation(self):
+        """today が RETIREMENT_DATE 以降のとき asset_valuation をそのまま返す"""
+        asset_valuation = 5_000_000
+
+        result = calculate_total_amount_at_60age(
+            yield_rate=0.03,
+            asset_valuation=asset_valuation,
+            today=date(2050, 1, 1),
+        )
+
+        assert result == asset_valuation
 
 
 class TestCalculateOpsIndicators:
