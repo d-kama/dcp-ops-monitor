@@ -1,19 +1,21 @@
 from typing import Self
 
+# TODO: 関連するドメイン定義ファイルに移動する
 
-class WebScrapingFailed(Exception):
+
+class AssetCollectionFailed(Exception):
     """Web スクレイピング機能のベース例外"""
 
     pass
 
 
-class ArtifactUploadError(WebScrapingFailed):
+class ArtifactUploadError(AssetCollectionFailed):
     """エラーアーティファクトのアップロード失敗"""
 
     pass
 
 
-class ScrapingFailed(WebScrapingFailed):
+class ScrapingFailed(AssetCollectionFailed):
     """スクレイピング処理のエラー
 
     ページ遷移失敗と資産情報抽出失敗の両方を表す。

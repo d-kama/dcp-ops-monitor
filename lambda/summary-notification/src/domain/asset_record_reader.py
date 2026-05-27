@@ -9,7 +9,7 @@ class IAssetRecordReader(ABC):
     """資産レコードリーダ（read 専用）
 
     summary-notification Lambda が Spreadsheet から AssetRecord を読み取るための I/O 契約。
-    write 側の責務は持たない（write は web-scraping/domain/IAssetRecordWriter が担う）。
+    write 側の責務は持たない（write は asset-collection/domain/IAssetRecordWriter が担う）。
     """
 
     @abstractmethod

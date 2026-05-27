@@ -10,8 +10,11 @@ from src.domain import (
 
 logger = get_logger()
 
+# TODO: クラス名を再検討する。データ収集を行うユースケース
+# TODO: AssetCollectionUseCase
 
-class WebScrapingService:
+
+class AssetCollectionService:
     def __init__(
         self,
         scraper: IScraper,
@@ -20,6 +23,7 @@ class WebScrapingService:
         self.scraper: IScraper = scraper
         self.artifact_repository: IArtifactRepository = artifact_repository
 
+    # TODO: メソッド名検討
     def scrape(self) -> dict[str, AssetEvaluation]:
         try:
             return self.scraper.fetch_asset_valuation()
@@ -27,6 +31,7 @@ class WebScrapingService:
             self._upload_error_artifacts(e)
             raise
 
+    # TODO: メソッド名検討
     def _upload_error_artifacts(self, e: ScrapingFailed) -> None:
         """エラーアーティファクトを S3 にアップロードする"""
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")

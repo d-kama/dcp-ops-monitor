@@ -1,9 +1,9 @@
 services:
-  dcp-web-scraping:
-    container_name: dcp-web-scraping
+  dcp-asset-collection:
+    container_name: dcp-asset-collection
     build:
       context: lambda
-      dockerfile: web-scraping/Dockerfile
+      dockerfile: asset-collection/Dockerfile
     ports:
       - "8080:8080"
     env_file:

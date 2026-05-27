@@ -6,9 +6,9 @@
 
 | 種別 | 規則 | 例 |
 |------|------|-----|
-| Python ファイル | snake_case | `web_scraping_service.py` |
+| Python ファイル | snake_case | `asset_collection_service.py` |
 | TypeScript ファイル | kebab-case | `dcp-ops-monitor-stack.ts` |
-| ディレクトリ | kebab-case | `summary-notification`, `web-scraping` |
+| ディレクトリ | kebab-case | `summary-notification`, `asset-collection` |
 
 ---
 
@@ -79,7 +79,7 @@ main
 
 #### Scope（任意）
 
-変更対象のモジュール名（例: `web-scraping`, `summary-notification`, `cdk`）
+変更対象のモジュール名（例: `asset-collection`, `summary-notification`, `cdk`）
 
 #### 例
 
@@ -91,7 +91,7 @@ feat(summary-notification): 運用指標の計算ロジックを追加
 ```
 
 ```shell
-improve(web-scraping): エラーメッセージの詳細化
+improve(asset-collection): エラーメッセージの詳細化
 
 スクレイピング失敗時のエラーメッセージに
 ページ URL とステータスコードを追加

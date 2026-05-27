@@ -48,7 +48,7 @@ dcp-ops-monitor リポジトリで、`task-list.md` の 1 タスクを **TDD（�
 ## テスト実行コマンド
 
 ```bash
-cd lambda/web-scraping && ENV=test uv run pytest -v
+cd lambda/asset-collection && ENV=test uv run pytest -v
 cd lambda/summary-notification && ENV=test uv run pytest -v
 npm run test:cdk  # CDK 変更時
 ```

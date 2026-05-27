@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from src.application import WebScrapingService
+from src.application import AssetCollectionService
 from src.config import ScrapingParameters
 from src.config.settings import get_logger, get_settings
 from src.domain import AssetRecord, IAssetRecordWriter, IScraper
@@ -56,11 +56,11 @@ def main(
 
     artifact_repository = S3ArtifactRepository(settings.data_bucket_name)
 
-    web_scraping_service = WebScrapingService(
+    asset_collection_service = AssetCollectionService(
         scraper=scraper,
         artifact_repository=artifact_repository,
     )
-    products = web_scraping_service.scrape()
+    products = asset_collection_service.scrape()
 
     today = datetime.now(ZoneInfo("Asia/Tokyo")).date()
     records = AssetRecord.from_asset_evaluations(target_date=today, products=products)

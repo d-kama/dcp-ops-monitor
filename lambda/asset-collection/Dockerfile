@@ -16,8 +16,8 @@ RUN python3.13 -m pip install uv
 COPY pyproject.toml ./
 COPY uv.lock ./
 COPY shared/pyproject.toml ./shared/
-COPY web-scraping/pyproject.toml ./web-scraping/
-RUN cd web-scraping && uv export -o /tmp/requirements.txt --no-hashes --no-dev --no-emit-workspace
+COPY asset-collection/pyproject.toml ./asset-collection/
+RUN cd asset-collection && uv export -o /tmp/requirements.txt --no-hashes --no-dev --no-emit-workspace
 
 FROM public.ecr.aws/lambda/python:3.13
 
@@ -45,7 +45,7 @@ COPY --from=builder /opt/chromedriver-linux64 /opt/
 
 # shared と src をコピー
 COPY shared/src/shared ./shared
-COPY web-scraping/src ./src
+COPY asset-collection/src ./src
 
 # Command can be overwritten by providing a different command in the template directly.
 CMD ["src.handler.handler"]

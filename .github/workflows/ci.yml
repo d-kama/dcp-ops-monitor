@@ -40,5 +40,5 @@ jobs:
       - name: Run Tests
         run: |
           npm run test:cdk
-          npm run test:web-scraping
+          npm run test:asset-collection
           npm run test:summary-notification

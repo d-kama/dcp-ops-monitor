@@ -1,4 +1,4 @@
-# web-scraping
+# asset-collection
 
 平日 09:00 JST に EventBridge で起動し、確定拠出年金 Web ページをスクレイピングして資産情報を Google Spreadsheet に保存する Lambda 関数です。
 
