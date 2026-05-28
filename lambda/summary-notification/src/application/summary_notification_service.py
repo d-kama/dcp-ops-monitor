@@ -8,7 +8,7 @@ from src.domain import (
     AssetRecord,
     AssetRetrievalFailed,
     IAssetRecordReader,
-    calculate_ops_indicators,
+    OpsIndicators,
 )
 
 from .message_formatter import format_summary_message
@@ -54,7 +54,7 @@ class SummaryNotificationService:
         total = AssetEvaluation.aggregate(products.values())
         logger.info("資産情報を取得しました")
 
-        indicators = calculate_ops_indicators(total)
+        indicators = OpsIndicators.from_asset_evaluation(total)
         logger.info("運用指標を計算しました", indicators=indicators.model_dump())
 
         weekly_records = self.asset_repository.get_records_within_days(days=7)

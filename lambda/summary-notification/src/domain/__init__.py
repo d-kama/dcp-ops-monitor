@@ -9,15 +9,12 @@ from .exceptions import (
     SummaryNotificationFailed,
 )
 from .ops_indicators import OpsIndicators
-from .ops_indicators_service import calculate_ops_indicators
 
 __all__ = [
     # Models
     "AssetEvaluation",
     "AssetRecord",
     "OpsIndicators",
-    # Domain Services
-    "calculate_ops_indicators",
     # Interfaces
     "IAssetRecordReader",
     # Exceptions
