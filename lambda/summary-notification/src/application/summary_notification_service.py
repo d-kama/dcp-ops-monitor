@@ -8,11 +8,11 @@ from src.domain import (
     AssetRecord,
     AssetRetrievalFailed,
     IAssetRecordReader,
-    INotifier,
     calculate_ops_indicators,
 )
 
 from .message_formatter import format_summary_message
+from .notifier import INotifier
 
 logger = get_logger()
 
@@ -43,6 +43,9 @@ class SummaryNotificationService:
             AssetRetrievalFailed: 資産情報が見つからない場合
             NotificationFailed: 通知送信失敗時
         """
+        # TODO: 直近1日分の商品毎の運用状況データ、合計データ、直近7日分のデータがあり、複雑。
+        # TODO: 直近7日分のデータを使って、サマリ化したい為、AssetSummaryドメインサービスを検討
+        # TODO: AssetSummaryを使ってフォーマットする部分だけ、message_formatterの責務とするか
         latest_records = self.asset_repository.get_latest_records()
         products = AssetRecord.to_evaluation_map(latest_records)
         if not products:

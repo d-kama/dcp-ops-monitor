@@ -1,8 +1,8 @@
 """サマリ通知ハンドラー"""
 
-from src.application import SummaryNotificationService
+from src.application import INotifier, SummaryNotificationService
 from src.config.settings import get_logger, get_settings
-from src.domain import IAssetRecordReader, INotifier
+from src.domain import IAssetRecordReader
 from src.infrastructure import (
     GoogleSheetAssetRecordReader,
     LineNotifier,
