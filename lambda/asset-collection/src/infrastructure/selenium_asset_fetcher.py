@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 from src.application import IAssetFetcher
-from src.config import ScrapingParameters
+from src.config import AssetFetchConfig
 from src.config.settings import get_logger
 from src.domain import AssetEvaluation, ScrapingFailed
 
@@ -16,18 +16,18 @@ class SeleniumAssetFetcher(IAssetFetcher):
 
     def __init__(
         self,
-        scraping_parameters: ScrapingParameters,
+        config: AssetFetchConfig,
         chrome_binary_location: str = "/opt/chrome/chrome",
         chrome_driver_path: str = "/opt/chromedriver",
     ) -> None:
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
-        self.user_agent = scraping_parameters.user_agent
+        self.user_agent = config.user_agent
         self.driver = self._get_driver()
-        self.user_id = scraping_parameters.login_user_id
-        self.password = scraping_parameters.login_password
-        self.birthdate = scraping_parameters.login_birthdate
-        self.start_url = scraping_parameters.start_url
+        self.user_id = config.login_user_id
+        self.password = config.login_password
+        self.birthdate = config.login_birthdate
+        self.start_url = config.start_url
 
     def _get_driver(self) -> webdriver.Chrome:
         chrome_options = webdriver.ChromeOptions()

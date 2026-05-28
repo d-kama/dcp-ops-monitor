@@ -3,7 +3,7 @@ from typing import Optional
 from zoneinfo import ZoneInfo
 
 from src.application import AssetCollectionUseCase, IAssetFetcher
-from src.config import ScrapingParameters
+from src.config import AssetFetchConfig
 from src.config.settings import get_logger, get_settings
 from src.domain import AssetRecord, IAssetRecordWriter
 from src.infrastructure import (
@@ -35,14 +35,14 @@ def main(
     # scraperが指定されていない場合のみ実装を使用
     if fetcher is None:
         scraping_parameter = get_ssm_json_parameter(name=settings.scraping_parameter_name, decrypt=True)
-        scraping_parameters = ScrapingParameters(
+        config = AssetFetchConfig(
             login_user_id=scraping_parameter["login_user_id"],
             login_password=scraping_parameter["login_password"],
             login_birthdate=scraping_parameter["login_birthdate"],
             start_url=scraping_parameter["start_url"],
             user_agent=settings.user_agent,
         )
-        fetcher = SeleniumAssetFetcher(scraping_parameters=scraping_parameters)
+        fetcher = SeleniumAssetFetcher(config=config)
 
     if asset_record_repository is None:
         spreadsheet_param = get_ssm_json_parameter(name=settings.spreadsheet_parameter_name, decrypt=True)
