@@ -10,7 +10,7 @@ class EnvSettings(BaseEnvSettings):
     )
 
     # Systems Manager Parameter Store のパラメータ名
-    scraping_parameter_name: str
+    asset_fetch_config_parameter_name: str
     spreadsheet_parameter_name: str
 
     # データ保存用 S3 バケット名

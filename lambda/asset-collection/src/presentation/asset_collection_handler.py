@@ -34,12 +34,12 @@ def main(
     """
     # scraperが指定されていない場合のみ実装を使用
     if fetcher is None:
-        scraping_parameter = get_ssm_json_parameter(name=settings.scraping_parameter_name, decrypt=True)
+        asset_fetch_config_param = get_ssm_json_parameter(name=settings.asset_fetch_config_parameter_name, decrypt=True)
         config = AssetFetchConfig(
-            login_user_id=scraping_parameter["login_user_id"],
-            login_password=scraping_parameter["login_password"],
-            login_birthdate=scraping_parameter["login_birthdate"],
-            start_url=scraping_parameter["start_url"],
+            login_user_id=asset_fetch_config_param["login_user_id"],
+            login_password=asset_fetch_config_param["login_password"],
+            login_birthdate=asset_fetch_config_param["login_birthdate"],
+            start_url=asset_fetch_config_param["start_url"],
             user_agent=settings.user_agent,
         )
         fetcher = SeleniumAssetFetcher(config=config)

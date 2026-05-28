@@ -15,7 +15,7 @@ import type { Construct } from 'constructs';
 export interface DcpOpsMonitorStackProps extends cdk.StackProps {
   logLevel: string;
   userAgent: string;
-  scrapingParameterName: string;
+  assetFetchConfigParameterName: string;
   spreadsheetParameterName: string;
   lineMessageParameterName: string;
 }
@@ -25,9 +25,13 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     super(scope, id, props);
 
     // Parameter Store
-    const scrapingParameter = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'ScrapingParameter', {
-      parameterName: props.scrapingParameterName,
-    });
+    const assetFetchConfigParameter = ssm.StringParameter.fromSecureStringParameterAttributes(
+      this,
+      'AssetFetchConfigParameter',
+      {
+        parameterName: props.assetFetchConfigParameterName,
+      },
+    );
     const spreadsheetParameter = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'SpreadsheetParameter', {
       parameterName: props.spreadsheetParameterName,
     });
@@ -61,7 +65,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         POWERTOOLS_SERVICE_NAME: 'asset-collection',
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         USER_AGENT: props.userAgent,
-        SCRAPING_PARAMETER_NAME: scrapingParameter.parameterName,
+        ASSET_FETCH_CONFIG_PARAMETER_NAME: assetFetchConfigParameter.parameterName,
         SPREADSHEET_PARAMETER_NAME: spreadsheetParameter.parameterName,
         DATA_BUCKET_NAME: dataBucket.bucketName,
       },
@@ -69,7 +73,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     assetCollectionFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
-        resources: [scrapingParameter.parameterArn, spreadsheetParameter.parameterArn],
+        resources: [assetFetchConfigParameter.parameterArn, spreadsheetParameter.parameterArn],
       }),
     );
     assetCollectionFunction.addToRolePolicy(

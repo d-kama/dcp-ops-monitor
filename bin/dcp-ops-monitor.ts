@@ -17,7 +17,7 @@ new DcpOpsMonitorStack(app, 'DcpOpsMonitorStack', {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
   /* NOTE: CDK で暗号化文字列を使用したパラメータを作成できない為、以下3つのパラメータを手動で事前に作成します。
     $ aws ssm put-parameter \
-       --name "/dcp-ops-monitor/scraping-parameters" \
+       --name "/dcp-ops-monitor/asset-fetch-config" \
        --value '{"start_url": "https://xxx", "login_user_id":"xxxx","login_password":"xxxx","login_birthdate":"19701201"}' \
        --type "SecureString"
 
@@ -31,7 +31,7 @@ new DcpOpsMonitorStack(app, 'DcpOpsMonitorStack', {
        --value '{"url": "https://xxx", "token": "xxx"}' \
        --type "SecureString"
    */
-  scrapingParameterName: '/dcp-ops-monitor/scraping-parameters',
+  assetFetchConfigParameterName: '/dcp-ops-monitor/asset-fetch-config',
   spreadsheetParameterName: '/dcp-ops-monitor/spreadsheet-parameters',
   lineMessageParameterName: '/dcp-ops-monitor/line-message-parameters',
 });
