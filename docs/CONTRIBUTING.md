@@ -130,7 +130,7 @@ aws ecr put-lifecycle-policy \
 
 | 環境変数 | 説明 |
 |---------|------|
-| `SCRAPING_PARAMETER_NAME` | スクレイピングパラメータ（URL、認証情報等）の SSM パラメータ名 |
+| `ASSET_FETCH_CONFIG_PARAMETER_NAME` | 資産取得設定（URL、認証情報等）の SSM パラメータ名 |
 | `SPREADSHEET_PARAMETER_NAME` | Google Spreadsheet 接続設定の SSM パラメータ名 |
 | `DATA_BUCKET_NAME` | エラーアーティファクト保存用 S3 バケット名 |
 | `USER_AGENT` | スクレイピング用ユーザーエージェント |
@@ -171,7 +171,7 @@ driver.quit()  # 終了時
 
 > Lambda コンテナでスクレイピングが正常に動作するか確認します。AWS リソースは LocalStack を使用し、スクレイピング先は本物を使用します。
 
-1. `.env.local` の `SCRAPING_PARAMETER_VALUE` に実際の認証情報を入力
+1. `.env.local` の `ASSET_FETCH_CONFIG_PARAMETER_VALUE` に実際の認証情報を入力
 
 2. コンテナを起動
 

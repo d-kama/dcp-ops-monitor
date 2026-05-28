@@ -13,7 +13,7 @@ test('Snapshot test for DcpOpsStatusNotificationStack', () => {
     logLevel: 'INFO',
     userAgent:
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-    scrapingParameterName: '/dcp-ops-monitor/dummy-scraping-parameters',
+    assetFetchConfigParameterName: '/dcp-ops-monitor/dummy-asset-fetch-config',
     spreadsheetParameterName: '/dcp-ops-monitor/dummy-spreadsheet-parameters',
     lineMessageParameterName: '/dcp-ops-monitor/dummy-line-message-parameters',
   });

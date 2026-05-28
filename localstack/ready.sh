@@ -4,6 +4,6 @@
 awslocal s3 mb "s3://${DATA_BUCKET_NAME}"
 
 # 起動時にParameterStoreにパラメータを登録する
-awslocal ssm put-parameter --name "${SCRAPING_PARAMETER_NAME}" --value "${SCRAPING_PARAMETER_VALUE}" --type SecureString --overwrite
+awslocal ssm put-parameter --name "${ASSET_FETCH_CONFIG_PARAMETER_NAME}" --value "${ASSET_FETCH_CONFIG_PARAMETER_VALUE}" --type SecureString --overwrite
 awslocal ssm put-parameter --name "${LINE_MESSAGE_PARAMETER_NAME}" --value "${LINE_MESSAGE_PARAMETER_VALUE}" --type SecureString --overwrite
 awslocal ssm put-parameter --name "${SPREADSHEET_PARAMETER_NAME}" --value "${SPREADSHEET_PARAMETER_VALUE}" --type SecureString --overwrite

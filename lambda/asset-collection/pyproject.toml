@@ -34,7 +34,7 @@ pythonpath = ["src/../", "src"]
 testpaths = ["tests",]
 env = [
     "ENV=test",
-    "SCRAPING_PARAMETER_NAME=/test/scraping-parameters",
+    "ASSET_FETCH_CONFIG_PARAMETER_NAME=/test/asset-fetch-config",
     "SPREADSHEET_PARAMETER_NAME=/test/spreadsheet-parameters",
     "DATA_BUCKET_NAME=test-data-bucket"
 ]
