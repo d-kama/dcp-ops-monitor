@@ -1,6 +1,6 @@
 import pytest
 
-from src.domain import NotificationFailed
+from src.application import NotificationFailed
 from src.infrastructure import LineNotifier
 
 LINE_API_URL = "http://test.invalid/line/messages"

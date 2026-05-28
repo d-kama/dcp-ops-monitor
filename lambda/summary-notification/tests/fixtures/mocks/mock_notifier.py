@@ -1,6 +1,6 @@
 """テスト用 Mock Notifier"""
 
-from src.domain import INotifier
+from src.application import INotifier
 
 
 class MockNotifier(INotifier):

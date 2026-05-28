@@ -1,11 +1,9 @@
-"""LINE 通知アダプター"""
-
 import json
 
 import requests
 
+from src.application import INotifier, NotificationFailed
 from src.config.settings import get_logger
-from src.domain import INotifier, NotificationFailed
 
 logger = get_logger()
 
