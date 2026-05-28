@@ -9,12 +9,6 @@ class AssetCollectionFailed(Exception):
     pass
 
 
-class ArtifactUploadError(AssetCollectionFailed):
-    """エラーアーティファクトのアップロード失敗"""
-
-    pass
-
-
 class ScrapingFailed(AssetCollectionFailed):
     """スクレイピング処理のエラー
 

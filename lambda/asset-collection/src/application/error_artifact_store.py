@@ -1,15 +1,11 @@
 from abc import ABC, abstractmethod
 
 
-class IArtifactRepository(ABC):
-    """アーティファクトリポジトリ抽象クラス"""
-
-    def __init__(self, bucket: str) -> None:
-        """コンストラクタ"""
-        pass
+class IErrorArtifactStore(ABC):
+    """エラー結果保存抽象クラス"""
 
     @abstractmethod
-    def save_error_artifact(self, key: str, file_path: str) -> None:
+    def store(self, key: str, file_path: str) -> None:
         """エラーアーティファクトを保存する
         Args:
             key (str): オブジェクトのキー
@@ -18,3 +14,9 @@ class IArtifactRepository(ABC):
             ArtifactUploadError: 保存失敗時
         """
         pass
+
+
+class ArtifactUploadError(Exception):
+    """エラーアーティファクトのアップロード失敗"""
+
+    pass

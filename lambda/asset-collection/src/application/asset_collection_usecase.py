@@ -3,28 +3,25 @@ from datetime import datetime
 from src.config.settings import get_logger
 from src.domain import (
     AssetEvaluation,
-    IArtifactRepository,
     IScraper,
     ScrapingFailed,
 )
 
+from .error_artifact_repository import IErrorArtifactRepository
+
 logger = get_logger()
 
-# TODO: クラス名を再検討する。データ収集を行うユースケース
-# TODO: AssetCollectionUseCase
 
-
-class AssetCollectionService:
+class AssetCollectionUseCase:
     def __init__(
         self,
         scraper: IScraper,
-        artifact_repository: IArtifactRepository,
+        error_artifact_repository: IErrorArtifactRepository,
     ) -> None:
         self.scraper: IScraper = scraper
-        self.artifact_repository: IArtifactRepository = artifact_repository
+        self.error_artifact_repository: IErrorArtifactRepository = error_artifact_repository
 
-    # TODO: メソッド名検討
-    def scrape(self) -> dict[str, AssetEvaluation]:
+    def collect(self) -> dict[str, AssetEvaluation]:
         try:
             return self.scraper.fetch_asset_valuation()
         except ScrapingFailed as e:
@@ -39,13 +36,13 @@ class AssetCollectionService:
         if e.tmp_screenshot_path:
             logger.info("エラー画像のアップロード開始")
             key = f"errors/{timestamp}.png"
-            self.artifact_repository.save_error_artifact(key=key, file_path=e.tmp_screenshot_path)
+            self.error_artifact_repository.store(key=key, file_path=e.tmp_screenshot_path)
             logger.info("エラー画像をアップロードしました。", extra={"error_screenshot_key": key})
             e.error_screenshot_key = key
 
         if e.tmp_html_path:
             logger.info("エラーになった資産情報 HTML ファイルのアップロード開始")
             key = f"errors/{timestamp}.html"
-            self.artifact_repository.save_error_artifact(key=key, file_path=e.tmp_html_path)
+            self.error_artifact_repository.store(key=key, file_path=e.tmp_html_path)
             logger.info("資産情報 HTML ファイルをアップロードしました。", extra={"error_html_key": key})
             e.error_html_key = key

@@ -4,13 +4,13 @@ from datetime import datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from src.application import AssetCollectionService
+from src.application import AssetCollectionUseCase
 from src.config import ScrapingParameters
 from src.config.settings import get_logger, get_settings
 from src.domain import AssetRecord, IAssetRecordWriter, IScraper
 from src.infrastructure import (
     GoogleSheetAssetRecordRepository,
-    S3ArtifactRepository,
+    S3ErrorArtifactRepository,
     SeleniumScraper,
     get_ssm_json_parameter,
 )
@@ -54,13 +54,13 @@ def main(
             credentials=spreadsheet_param["credentials"],
         )
 
-    artifact_repository = S3ArtifactRepository(settings.data_bucket_name)
+    error_repository = S3ErrorArtifactRepository(settings.data_bucket_name)
 
-    asset_collection_service = AssetCollectionService(
+    asset_collection_usecase = AssetCollectionUseCase(
         scraper=scraper,
-        artifact_repository=artifact_repository,
+        error_artifact_repository=error_repository,
     )
-    products = asset_collection_service.scrape()
+    products = asset_collection_usecase.collect()
 
     today = datetime.now(ZoneInfo("Asia/Tokyo")).date()
     records = AssetRecord.from_asset_evaluations(target_date=today, products=products)
