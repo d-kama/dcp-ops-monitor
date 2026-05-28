@@ -28,7 +28,6 @@ class AssetCollectionUseCase:
             self._upload_error_artifacts(e)
             raise
 
-    # TODO: メソッド名検討
     def _upload_error_artifacts(self, e: ScrapingFailed) -> None:
         """エラーアーティファクトを S3 にアップロードする"""
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")

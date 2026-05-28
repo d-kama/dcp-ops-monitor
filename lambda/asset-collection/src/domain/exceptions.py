@@ -9,6 +9,7 @@ class AssetCollectionFailed(Exception):
     pass
 
 
+# TODO: ドメインイベント、ドメインサービスなどへの移行を検討する
 class ScrapingFailed(AssetCollectionFailed):
     """スクレイピング処理のエラー
 
