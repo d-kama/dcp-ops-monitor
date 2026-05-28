@@ -9,12 +9,7 @@ class AssetCollectionFailed(Exception):
     pass
 
 
-class ArtifactUploadError(AssetCollectionFailed):
-    """エラーアーティファクトのアップロード失敗"""
-
-    pass
-
-
+# TODO: ドメインイベント、ドメインサービスなどへの移行を検討する
 class ScrapingFailed(AssetCollectionFailed):
     """スクレイピング処理のエラー
 

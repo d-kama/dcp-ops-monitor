@@ -3,12 +3,8 @@ from abc import ABC, abstractmethod
 from src.domain import AssetEvaluation
 
 
-class IScraper(ABC):
+class IAssetFetcher(ABC):
     """スクレイピングドライバー抽象クラス"""
-
-    def __init__(self) -> None:
-        """コンストラクタ"""
-        pass
 
     @abstractmethod
     def fetch_asset_valuation(self) -> dict[str, AssetEvaluation]:

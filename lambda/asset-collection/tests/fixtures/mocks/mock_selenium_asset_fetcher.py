@@ -1,8 +1,9 @@
-from src.config import ScrapingParameters
-from src.domain import AssetEvaluation, IScraper, ScrapingFailed
+from src.application import IAssetFetcher
+from src.config import AssetFetchConfig
+from src.domain import AssetEvaluation, ScrapingFailed
 
 
-class MockSeleniumScraper(IScraper):
+class MockSeleniumAssetFetcher(IAssetFetcher):
     """Selenium WebDriver のMock実装（E2Eテスト用）
 
     実際にブラウザを起動せず、事前に用意した商品別資産情報を返すMockオブジェクト
@@ -11,7 +12,7 @@ class MockSeleniumScraper(IScraper):
     def __init__(
         self,
         mock_products: dict[str, AssetEvaluation] | None = None,
-        scraping_parameters: ScrapingParameters | None = None,
+        config: AssetFetchConfig | None = None,
         chrome_binary_location: str = "",
         chrome_driver_path: str = "",
         should_fail: bool = False,
@@ -21,13 +22,13 @@ class MockSeleniumScraper(IScraper):
 
         Args:
             mock_products: 返却する商品別資産情報（指定しない場合はデフォルト値）
-            scraping_parameters: スクレイピングパラメータ（使用しない）
+            config: フェッチ先接続設定（使用しない）
             chrome_binary_location: Chromeバイナリの場所（使用しない）
             chrome_driver_path: ChromeDriverのパス（使用しない）
             should_fail: Trueの場合、スクレイピング失敗を模擬する
             should_fail_extraction: Trueの場合、抽出失敗を模擬する
         """
-        self.scraping_parameters = scraping_parameters
+        self.config = config
         self.chrome_binary_location = chrome_binary_location
         self.chrome_driver_path = chrome_driver_path
         self.mock_products = mock_products

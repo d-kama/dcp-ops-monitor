@@ -1,16 +1,14 @@
-"""S3 アーティファクトリポジトリ実装"""
-
 import os
 
 import boto3
 
+from src.application import ArtifactUploadError, IErrorArtifactRepository
 from src.config.settings import get_logger
-from src.domain import ArtifactUploadError, IArtifactRepository
 
 logger = get_logger()
 
 
-class S3ArtifactRepository(IArtifactRepository):
+class S3ErrorArtifactRepository(IErrorArtifactRepository):
     """S3 アーティファクトリポジトリ実装"""
 
     def __init__(self, bucket: str) -> None:
@@ -27,7 +25,7 @@ class S3ArtifactRepository(IArtifactRepository):
             self.client = boto3.client("s3")
         self.bucket = bucket
 
-    def save_error_artifact(self, key: str, file_path: str) -> None:
+    def store(self, key: str, file_path: str) -> None:
         """エラーアーティファクトを S3 に保存する
 
         Args:

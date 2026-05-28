@@ -1,13 +1,15 @@
-from src.config import ScrapingParameters
+from pydantic import SecretStr
+
+from src.config import AssetFetchConfig
 
 
-class TestScrapingParameters:
+class TestAssetFetchConfig:
     def test_create__valid_fields(self):
         """全フィールド指定でインスタンス化できる"""
-        params = ScrapingParameters(
-            login_user_id="user-id",
-            login_password="password",
-            login_birthdate="19800101",
+        params = AssetFetchConfig(
+            login_user_id=SecretStr("user-id"),
+            login_password=SecretStr("password"),
+            login_birthdate=SecretStr("19800101"),
             start_url="https://example.com/login",
             user_agent="Mozilla/5.0 test-agent",
         )
@@ -20,10 +22,10 @@ class TestScrapingParameters:
 
     def test_repr__masks_sensitive_fields(self):
         """repr() の出力に認証情報の平文が含まれない"""
-        params = ScrapingParameters(
-            login_user_id="secret-user-123",
-            login_password="secret-pass-456",
-            login_birthdate="19800101",
+        params = AssetFetchConfig(
+            login_user_id=SecretStr("secret-user-123"),
+            login_password=SecretStr("secret-pass-456"),
+            login_birthdate=SecretStr("19800101"),
             start_url="https://example.com/login",
             user_agent="Mozilla/5.0 test-agent",
         )

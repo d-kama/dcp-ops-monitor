@@ -1,3 +1,3 @@
-from .scraping_parameters import ScrapingParameters
+from .asset_fetch_config import AssetFetchConfig
 
-__all__ = ["ScrapingParameters"]
+__all__ = ["AssetFetchConfig"]
