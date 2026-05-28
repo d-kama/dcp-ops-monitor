@@ -35,7 +35,7 @@ paths:
 
 | 種別 | 規則 | 例 |
 |------|------|-----|
-| クラス | PascalCase | `DcpAssetInfo`, `WebScrapingService` |
+| クラス | PascalCase | `DcpAssetInfo`, `AssetCollectionService` |
 | 関数・メソッド | snake_case | `fetch_asset_valuation`, `send_notification` |
 | 変数 | snake_case | `error_message`, `asset_valuation` |
 | 定数 | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT` |

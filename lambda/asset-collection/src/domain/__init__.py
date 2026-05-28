@@ -8,8 +8,8 @@ from .artifact_repository import IArtifactRepository
 from .asset_record_writer import IAssetRecordWriter
 from .exceptions import (
     ArtifactUploadError,
+    AssetCollectionFailed,
     ScrapingFailed,
-    WebScrapingFailed,
 )
 from .scraper import IScraper
 
@@ -24,6 +24,6 @@ __all__ = [
     # Exceptions
     "ArtifactUploadError",
     "ScrapingFailed",
-    "WebScrapingFailed",
+    "AssetCollectionFailed",
     "AssetRecordError",
 ]

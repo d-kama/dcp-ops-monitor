@@ -47,9 +47,9 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     });
 
     // Lambda Function
-    const webScrapingFunction = new lambda.DockerImageFunction(this, 'webScrapingFunction', {
+    const assetCollectionFunction = new lambda.DockerImageFunction(this, 'assetCollectionFunction', {
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../lambda'), {
-        file: 'web-scraping/Dockerfile',
+        file: 'asset-collection/Dockerfile',
         extraHash: props.env?.region,
       }),
       memorySize: 1024,
@@ -58,7 +58,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
       logGroup: logGroup,
       applicationLogLevel: props.logLevel,
       environment: {
-        POWERTOOLS_SERVICE_NAME: 'web-scraping',
+        POWERTOOLS_SERVICE_NAME: 'asset-collection',
         POWERTOOLS_LOG_LEVEL: props.logLevel,
         USER_AGENT: props.userAgent,
         SCRAPING_PARAMETER_NAME: scrapingParameter.parameterName,
@@ -66,13 +66,13 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         DATA_BUCKET_NAME: dataBucket.bucketName,
       },
     });
-    webScrapingFunction.addToRolePolicy(
+    assetCollectionFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['ssm:GetParameter'],
         resources: [scrapingParameter.parameterArn, spreadsheetParameter.parameterArn],
       }),
     );
-    webScrapingFunction.addToRolePolicy(
+    assetCollectionFunction.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['s3:PutObject'],
         resources: [`${dataBucket.bucketArn}/*`],
@@ -86,7 +86,7 @@ export class DcpOpsMonitorStack extends cdk.Stack {
         hour: '0',
         weekDay: 'MON-FRI',
       }),
-      targets: [new targets.LambdaFunction(webScrapingFunction)],
+      targets: [new targets.LambdaFunction(assetCollectionFunction)],
     });
 
     // サマリ通知用Lambda Function
@@ -145,17 +145,17 @@ export class DcpOpsMonitorStack extends cdk.Stack {
     });
 
     // Lambda エラーメトリクス Alarm
-    const webScrapingErrorAlarm = new cloudwatch.Alarm(this, 'WebScrapingErrorAlarm', {
-      metric: webScrapingFunction.metricErrors({
+    const assetCollectionErrorAlarm = new cloudwatch.Alarm(this, 'AssetCollectionErrorAlarm', {
+      metric: assetCollectionFunction.metricErrors({
         period: cdk.Duration.minutes(5),
       }),
       threshold: 1,
       evaluationPeriods: 1,
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
-      alarmDescription: 'web-scraping Lambda でエラーが発生しました',
+      alarmDescription: 'asset-collection Lambda でエラーが発生しました',
     });
-    webScrapingErrorAlarm.addAlarmAction(new cw_actions.SnsAction(errorAlarmTopic));
+    assetCollectionErrorAlarm.addAlarmAction(new cw_actions.SnsAction(errorAlarmTopic));
 
     const summaryNotificationErrorAlarm = new cloudwatch.Alarm(this, 'SummaryNotificationErrorAlarm', {
       metric: summaryNotificationFunction.metricErrors({

@@ -20,5 +20,5 @@ paths:
 | 種別 | 規則 | 例 |
 |------|------|-----|
 | クラス・インターフェース | PascalCase | `DcpOpsMonitorStack` |
-| 関数・変数 | camelCase | `errorBucket`, `webScrapingFunction` |
+| 関数・変数 | camelCase | `errorBucket`, `assetCollectionFunction` |
 | 定数 | UPPER_SNAKE_CASE または camelCase | `LOG_LEVEL` |

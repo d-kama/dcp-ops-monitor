@@ -24,7 +24,7 @@ npm run format:ci     # format（check only、CI 用）
 ### 型チェック
 
 ```bash
-npm run type-check    # web-scraping の型チェック（summary-notification は未対応）
+npm run type-check    # asset-collection の型チェック（summary-notification は未対応）
 ```
 
 ### テスト
@@ -34,23 +34,23 @@ npm run type-check    # web-scraping の型チェック（summary-notification �
 npm run test:cdk
 
 # Lambda テスト（全体）
-npm run test:web-scraping
+npm run test:asset-collection
 npm run test:summary-notification
 
 # Lambda テスト（単一ファイル）
-cd lambda/web-scraping && ENV=test uv run pytest tests/domain/test_asset_record_object.py -v
+cd lambda/asset-collection && ENV=test uv run pytest tests/domain/test_asset_record_object.py -v
 cd lambda/summary-notification && ENV=test uv run pytest tests/domain/test_asset_object.py -v
 
 # Lambda テスト（単一関数）
-cd lambda/web-scraping && ENV=test uv run pytest tests/domain/test_asset_record_object.py::test_function_name -v
+cd lambda/asset-collection && ENV=test uv run pytest tests/domain/test_asset_record_object.py::test_function_name -v
 ```
 
 ### ローカル実行（Docker Compose）
 
-web-scraping Lambda を LocalStack と組み合わせて動かす:
+asset-collection Lambda を LocalStack と組み合わせて動かす:
 
 ```bash
-docker compose up          # LocalStack + web-scraping コンテナ起動
+docker compose up          # LocalStack + asset-collection コンテナ起動
 docker compose up --build  # イメージ再ビルドして起動
 ```
 

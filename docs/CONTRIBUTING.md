@@ -81,7 +81,7 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 
 ### なぜ shared パッケージがあるか
 
-`lambda/shared` は uv workspace のメンバーとして、`web-scraping` と `summary-notification` の両 Lambda から依存されます。
+`lambda/shared` は uv workspace のメンバーとして、`asset-collection` と `summary-notification` の両 Lambda から依存されます。
 
 各 Lambda は独立した uv プロジェクトであるため、共通コードをコピーせず shared パッケージとして一元管理することで整合性を保ちます。
 
@@ -94,11 +94,11 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 | `infrastructure/ssm_parameter.py` | SSM Parameter Store クライアント |
 | `config/base_settings.py` | Logger・BaseSettings（aws-lambda-powertools ベース） |
 
-リポジトリ IF は各 Lambda の `domain/` 層が個別に定義する（ISP: Interface Segregation Principle）。`web-scraping` は write 専用の `IAssetRecordWriter`、`summary-notification` は read 専用の `IAssetRecordReader` を持ち、互いの IF に依存しない。
+リポジトリ IF は各 Lambda の `domain/` 層が個別に定義する（ISP: Interface Segregation Principle）。`asset-collection` は write 専用の `IAssetRecordWriter`、`summary-notification` は read 専用の `IAssetRecordReader` を持ち、互いの IF に依存しない。
 
 ---
 
-## web-scraping
+## asset-collection
 
 ### なぜ Docker コンテナを使うか
 

@@ -10,6 +10,33 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
     },
   },
   "Resources": {
+    "AssetCollectionErrorAlarm3FCB16C7": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "ErrorAlarmTopicB94BACEE",
+          },
+        ],
+        "AlarmDescription": "asset-collection Lambda でエラーが発生しました",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": {
+              "Ref": "assetCollectionFunction089A1048",
+            },
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "Errors",
+        "Namespace": "AWS/Lambda",
+        "Period": 300,
+        "Statistic": "Sum",
+        "Threshold": 1,
+        "TreatMissingData": "notBreaching",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
     "DataBucketE3889A50": {
       "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket",
@@ -29,7 +56,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
           {
             "Arn": {
               "Fn::GetAtt": [
-                "webScrapingFunction3F73FC71",
+                "assetCollectionFunction089A1048",
                 "Arn",
               ],
             },
@@ -39,12 +66,12 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::Events::Rule",
     },
-    "EventRuleAllowEventRuleDcpOpsMonitorStackwebScrapingFunctionD4D82C84799A9237": {
+    "EventRuleAllowEventRuleDcpOpsMonitorStackassetCollectionFunctionE28A7282971DB58D": {
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "webScrapingFunction3F73FC71",
+            "assetCollectionFunction089A1048",
             "Arn",
           ],
         },
@@ -263,37 +290,10 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "WebScrapingErrorAlarm782FDA1C": {
-      "Properties": {
-        "AlarmActions": [
-          {
-            "Ref": "ErrorAlarmTopicB94BACEE",
-          },
-        ],
-        "AlarmDescription": "web-scraping Lambda でエラーが発生しました",
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "Dimensions": [
-          {
-            "Name": "FunctionName",
-            "Value": {
-              "Ref": "webScrapingFunction3F73FC71",
-            },
-          },
-        ],
-        "EvaluationPeriods": 1,
-        "MetricName": "Errors",
-        "Namespace": "AWS/Lambda",
-        "Period": 300,
-        "Statistic": "Sum",
-        "Threshold": 1,
-        "TreatMissingData": "notBreaching",
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
-    "webScrapingFunction3F73FC71": {
+    "assetCollectionFunction089A1048": {
       "DependsOn": [
-        "webScrapingFunctionServiceRoleDefaultPolicy417D3A09",
-        "webScrapingFunctionServiceRoleC1917590",
+        "assetCollectionFunctionServiceRoleDefaultPolicy2CD5A5A5",
+        "assetCollectionFunctionServiceRoleF7683BCD",
       ],
       "Properties": {
         "Code": {
@@ -307,7 +307,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
               "Ref": "DataBucketE3889A50",
             },
             "POWERTOOLS_LOG_LEVEL": "INFO",
-            "POWERTOOLS_SERVICE_NAME": "web-scraping",
+            "POWERTOOLS_SERVICE_NAME": "asset-collection",
             "SCRAPING_PARAMETER_NAME": "/dcp-ops-monitor/dummy-scraping-parameters",
             "SPREADSHEET_PARAMETER_NAME": "/dcp-ops-monitor/dummy-spreadsheet-parameters",
             "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
@@ -324,7 +324,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
         "PackageType": "Image",
         "Role": {
           "Fn::GetAtt": [
-            "webScrapingFunctionServiceRoleC1917590",
+            "assetCollectionFunctionServiceRoleF7683BCD",
             "Arn",
           ],
         },
@@ -332,38 +332,7 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
       },
       "Type": "AWS::Lambda::Function",
     },
-    "webScrapingFunctionServiceRoleC1917590": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "webScrapingFunctionServiceRoleDefaultPolicy417D3A09": {
+    "assetCollectionFunctionServiceRoleDefaultPolicy2CD5A5A5": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
@@ -434,14 +403,45 @@ exports[`Snapshot test for DcpOpsStatusNotificationStack 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "webScrapingFunctionServiceRoleDefaultPolicy417D3A09",
+        "PolicyName": "assetCollectionFunctionServiceRoleDefaultPolicy2CD5A5A5",
         "Roles": [
           {
-            "Ref": "webScrapingFunctionServiceRoleC1917590",
+            "Ref": "assetCollectionFunctionServiceRoleF7683BCD",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "assetCollectionFunctionServiceRoleF7683BCD": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
     },
   },
   "Rules": {

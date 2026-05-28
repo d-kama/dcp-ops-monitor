@@ -1,5 +1,5 @@
 [tool.uv.workspace]
-members = ["shared", "web-scraping", "summary-notification"]
+members = ["shared", "asset-collection", "summary-notification"]
 
 [tool.ruff]
 line-length = 120

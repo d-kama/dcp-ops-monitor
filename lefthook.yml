@@ -24,11 +24,11 @@ pre-commit:
       glob: "lambda/**/*.py"
       run: npm run type-check
 
-    test:web-scraping:
+    test:asset-collection:
       glob:
-        - "lambda/web-scraping/**/*.py"
+        - "lambda/asset-collection/**/*.py"
         - "lambda/shared/**/*.py"
-      run: cd lambda/web-scraping && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
+      run: cd lambda/asset-collection && ENV=test uv run pytest --cov -v --tb=short --disable-warnings --maxfail=1
 
     test:summary-notification:
       glob:
