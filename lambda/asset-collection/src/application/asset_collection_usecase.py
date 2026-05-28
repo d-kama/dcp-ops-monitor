@@ -3,10 +3,10 @@ from datetime import datetime
 from src.config.settings import get_logger
 from src.domain import (
     AssetEvaluation,
-    IScraper,
     ScrapingFailed,
 )
 
+from .asset_fetcher_interface import IAssetFetcher
 from .error_artifact_repository import IErrorArtifactRepository
 
 logger = get_logger()
@@ -15,15 +15,15 @@ logger = get_logger()
 class AssetCollectionUseCase:
     def __init__(
         self,
-        scraper: IScraper,
+        fetcher: IAssetFetcher,
         error_artifact_repository: IErrorArtifactRepository,
     ) -> None:
-        self.scraper: IScraper = scraper
+        self.fetcher: IAssetFetcher = fetcher
         self.error_artifact_repository: IErrorArtifactRepository = error_artifact_repository
 
     def collect(self) -> dict[str, AssetEvaluation]:
         try:
-            return self.scraper.fetch_asset_valuation()
+            return self.fetcher.fetch_asset_valuation()
         except ScrapingFailed as e:
             self._upload_error_artifacts(e)
             raise

@@ -3,14 +3,15 @@ from tempfile import mkdtemp
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+from src.application import IAssetFetcher
 from src.config import ScrapingParameters
 from src.config.settings import get_logger
-from src.domain import AssetEvaluation, IScraper, ScrapingFailed
+from src.domain import AssetEvaluation, ScrapingFailed
 
 logger = get_logger()
 
 
-class SeleniumScraper(IScraper):
+class SeleniumAssetFetcher(IAssetFetcher):
     """Selenium WebDriverを提供するクラス"""
 
     def __init__(

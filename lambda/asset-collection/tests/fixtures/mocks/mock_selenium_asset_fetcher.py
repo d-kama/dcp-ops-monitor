@@ -1,8 +1,9 @@
+from src.application import IAssetFetcher
 from src.config import ScrapingParameters
-from src.domain import AssetEvaluation, IScraper, ScrapingFailed
+from src.domain import AssetEvaluation, ScrapingFailed
 
 
-class MockSeleniumScraper(IScraper):
+class MockSeleniumAssetFetcher(IAssetFetcher):
     """Selenium WebDriver のMock実装（E2Eテスト用）
 
     実際にブラウザを起動せず、事前に用意した商品別資産情報を返すMockオブジェクト

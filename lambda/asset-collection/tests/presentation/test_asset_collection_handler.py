@@ -44,16 +44,16 @@ def test_main_e2e_with_mocks(valid_products):
     """
     # given
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumAssetFetcher
 
-    scraper = MockSeleniumScraper(mock_products=valid_products)
+    fetcher = MockSeleniumAssetFetcher(mock_products=valid_products)
     asset_record_repo = MockAssetRecordWriter()
 
     # when
-    main(scraper=scraper, asset_record_repository=asset_record_repo)
+    main(fetcher=fetcher, asset_record_repository=asset_record_repo)
 
     # then
-    assert scraper.fetch_called is True
+    assert fetcher.fetch_called is True
     assert len(asset_record_repo.saved_records) == 3
     product_names = {r.product for r in asset_record_repo.saved_records}
     assert product_names == {"プロダクト_1", "プロダクト_2", "プロダクト_3"}
@@ -68,21 +68,21 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumAssetFetcher
 
-    scraper = MockSeleniumScraper(should_fail=True)
+    fetcher = MockSeleniumAssetFetcher(should_fail=True)
     asset_record_repo = MockAssetRecordWriter()
 
     # when, then
     with pytest.raises(ScrapingFailed) as exc_info:
-        main(scraper=scraper, asset_record_repository=asset_record_repo)
+        main(fetcher=fetcher, asset_record_repository=asset_record_repo)
 
     # エラーオブジェクトに error_screenshot_key が含まれることを確認
     assert exc_info.value.error_screenshot_key is not None
     assert exc_info.value.error_screenshot_key.startswith("errors/")
 
     # スクレイピングは試みられたが失敗したことを確認
-    assert scraper.fetch_called is True
+    assert fetcher.fetch_called is True
 
     # レコード保存は呼ばれていないことを確認
     assert len(asset_record_repo.saved_records) == 0
@@ -101,21 +101,21 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumScraper
+    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumAssetFetcher
 
-    scraper = MockSeleniumScraper(should_fail_extraction=True)
+    fetcher = MockSeleniumAssetFetcher(should_fail_extraction=True)
     asset_record_repo = MockAssetRecordWriter()
 
     # when, then
     with pytest.raises(ScrapingFailed) as exc_info:
-        main(scraper=scraper, asset_record_repository=asset_record_repo)
+        main(fetcher=fetcher, asset_record_repository=asset_record_repo)
 
     # エラーオブジェクトに error_html_key が含まれることを確認
     assert exc_info.value.error_html_key is not None
     assert exc_info.value.error_html_key.startswith("errors/")
 
     # スクレイピングは実行されたことを確認
-    assert scraper.fetch_called is True
+    assert fetcher.fetch_called is True
 
     # レコード保存は呼ばれていないことを確認
     assert len(asset_record_repo.saved_records) == 0

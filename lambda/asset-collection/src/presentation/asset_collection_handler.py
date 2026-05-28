@@ -1,17 +1,15 @@
-"""資産情報収集の Presentation 層"""
-
 from datetime import datetime
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from src.application import AssetCollectionUseCase
+from src.application import AssetCollectionUseCase, IAssetFetcher
 from src.config import ScrapingParameters
 from src.config.settings import get_logger, get_settings
-from src.domain import AssetRecord, IAssetRecordWriter, IScraper
+from src.domain import AssetRecord, IAssetRecordWriter
 from src.infrastructure import (
     GoogleSheetAssetRecordRepository,
     S3ErrorArtifactRepository,
-    SeleniumScraper,
+    SeleniumAssetFetcher,
     get_ssm_json_parameter,
 )
 
@@ -20,13 +18,13 @@ logger = get_logger()
 
 
 def main(
-    scraper: Optional[IScraper] = None,
+    fetcher: Optional[IAssetFetcher] = None,
     asset_record_repository: Optional[IAssetRecordWriter] = None,
 ) -> None:
     """メイン処理
 
     Args:
-        scraper (Optional[IScraper]): スクレイパー（テスト時にMockを注入可能）
+        fetcher (Optional[IAssetFetcher]): フェッチャー（テスト時にMockを注入可能）
         asset_record_repository (Optional[IAssetRecordWriter]): 資産レコードライター（テスト時にMockを注入可能）
 
     Raises:
@@ -35,7 +33,7 @@ def main(
         AssetRecordError: 資産レコードの保存失敗時
     """
     # scraperが指定されていない場合のみ実装を使用
-    if scraper is None:
+    if fetcher is None:
         scraping_parameter = get_ssm_json_parameter(name=settings.scraping_parameter_name, decrypt=True)
         scraping_parameters = ScrapingParameters(
             login_user_id=scraping_parameter["login_user_id"],
@@ -44,7 +42,7 @@ def main(
             start_url=scraping_parameter["start_url"],
             user_agent=settings.user_agent,
         )
-        scraper = SeleniumScraper(scraping_parameters=scraping_parameters)
+        fetcher = SeleniumAssetFetcher(scraping_parameters=scraping_parameters)
 
     if asset_record_repository is None:
         spreadsheet_param = get_ssm_json_parameter(name=settings.spreadsheet_parameter_name, decrypt=True)
@@ -57,7 +55,7 @@ def main(
     error_repository = S3ErrorArtifactRepository(settings.data_bucket_name)
 
     asset_collection_usecase = AssetCollectionUseCase(
-        scraper=scraper,
+        fetcher=fetcher,
         error_artifact_repository=error_repository,
     )
     products = asset_collection_usecase.collect()

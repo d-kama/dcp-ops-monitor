@@ -9,14 +9,12 @@ from .exceptions import (
     AssetCollectionFailed,
     ScrapingFailed,
 )
-from .scraper import IScraper
 
 __all__ = [
     # Models
     "AssetEvaluation",
     "AssetRecord",
     # Interfaces
-    "IScraper",
     "IAssetRecordWriter",
     # Exceptions
     "ScrapingFailed",
