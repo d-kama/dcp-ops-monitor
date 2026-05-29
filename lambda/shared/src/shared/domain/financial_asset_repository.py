@@ -16,3 +16,19 @@ class IFinancialAssetRepository(ABC):
         Raises:
             AssetRecordError: レコード保存失敗時
         """
+
+    @abstractmethod
+    def retrieve_from_with_days(self, days: int) -> FinancialAssetHistory:
+        """直近 N 日分の金融資産履歴を取得する
+
+        最新日付を基準に、(最新日 - days) より新しい日付の資産を返す。
+
+        Args:
+            days: 直近何日分を取得するか（正の整数）
+
+        Returns:
+            FinancialAssetHistory: 該当期間の金融資産履歴（空の場合は空の History を返す）
+
+        Raises:
+            ValueError: days が 0 以下の場合
+        """
