@@ -2,7 +2,7 @@ from typing import Optional
 
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.application import AssetCollectionUseCase, IAssetFetcher
+from src.application import AssetCollectionUseCase, IAssetFetcher, SaveAssetUseCase
 from src.config import AssetFetchConfig
 from src.config.settings import get_logger, get_settings
 from src.infrastructure import (
@@ -56,5 +56,7 @@ def main(
         fetcher=fetcher,
         error_artifact_repository=error_repository,
     )
+    save_asset_usecase = SaveAssetUseCase(repository=financial_asset_repository)
+
     history = asset_collection_usecase.collect()
-    financial_asset_repository.save_daily(history)
+    save_asset_usecase.save(history)
