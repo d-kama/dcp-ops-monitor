@@ -1,8 +1,15 @@
 import os
+from datetime import date
 
 import pytest
 
-from src.domain import AssetEvaluation
+from src.domain import (
+    AssetValuation,
+    CumulativeContributions,
+    FinancialAsset,
+    FinancialAssetHistory,
+    GainsOrLosses,
+)
 
 
 def list_s3_objects(local_stack_container, prefix: str) -> list[str]:
@@ -16,46 +23,56 @@ def list_s3_objects(local_stack_container, prefix: str) -> list[str]:
 
 
 @pytest.fixture
-def valid_products() -> dict[str, AssetEvaluation]:
-    """テスト用の正常な商品別資産情報を生成する"""
-    return {
-        "プロダクト_1": AssetEvaluation(
-            cumulative_contributions=100_000,
-            gains_or_losses=11_111,
-            asset_valuation=111_111,
-        ),
-        "プロダクト_2": AssetEvaluation(
-            cumulative_contributions=200_000,
-            gains_or_losses=22_222,
-            asset_valuation=222_222,
-        ),
-        "プロダクト_3": AssetEvaluation(
-            cumulative_contributions=300_000,
-            gains_or_losses=33_333,
-            asset_valuation=333_333,
-        ),
-    }
+def valid_history() -> FinancialAssetHistory:
+    """テスト用の正常な金融資産履歴を生成する"""
+    today = date.today()
+    return FinancialAssetHistory(
+        assets=[
+            FinancialAsset(
+                product_name="プロダクト_1",
+                base_date=today,
+                cumulative_contributions=CumulativeContributions(value=100_000),
+                gains_or_losses=GainsOrLosses(value=11_111),
+                asset_valuation=AssetValuation(value=111_111),
+            ),
+            FinancialAsset(
+                product_name="プロダクト_2",
+                base_date=today,
+                cumulative_contributions=CumulativeContributions(value=200_000),
+                gains_or_losses=GainsOrLosses(value=22_222),
+                asset_valuation=AssetValuation(value=222_222),
+            ),
+            FinancialAsset(
+                product_name="プロダクト_3",
+                base_date=today,
+                cumulative_contributions=CumulativeContributions(value=300_000),
+                gains_or_losses=GainsOrLosses(value=33_333),
+                asset_valuation=AssetValuation(value=333_333),
+            ),
+        ]
+    )
 
 
-def test_main_e2e_with_mocks(valid_products):
+def test_main_e2e_with_mocks(valid_history):
     """main関数のE2Eテスト（Mockを使用）
 
     エンドツーエンドで処理が正常に完了することを確認する
     """
     # given
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumAssetFetcher
+    from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
 
-    fetcher = MockSeleniumAssetFetcher(mock_products=valid_products)
-    asset_record_repo = MockAssetRecordWriter()
+    fetcher = MockSeleniumAssetFetcher(mock_history=valid_history)
+    repo = MockFinancialAssetRepository()
 
     # when
-    main(fetcher=fetcher, asset_record_repository=asset_record_repo)
+    main(fetcher=fetcher, financial_asset_repository=repo)
 
     # then
     assert fetcher.fetch_called is True
-    assert len(asset_record_repo.saved_records) == 3
-    product_names = {r.product for r in asset_record_repo.saved_records}
+    assert repo.saved_history is not None
+    assert len(repo.saved_history.assets) == 3
+    product_names = {a.product_name for a in repo.saved_history.assets}
     assert product_names == {"プロダクト_1", "プロダクト_2", "プロダクト_3"}
 
 
@@ -68,26 +85,20 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumAssetFetcher
+    from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
 
     fetcher = MockSeleniumAssetFetcher(should_fail=True)
-    asset_record_repo = MockAssetRecordWriter()
+    repo = MockFinancialAssetRepository()
 
     # when, then
     with pytest.raises(ScrapingFailed) as exc_info:
-        main(fetcher=fetcher, asset_record_repository=asset_record_repo)
+        main(fetcher=fetcher, financial_asset_repository=repo)
 
-    # エラーオブジェクトに error_screenshot_key が含まれることを確認
     assert exc_info.value.error_screenshot_key is not None
     assert exc_info.value.error_screenshot_key.startswith("errors/")
-
-    # スクレイピングは試みられたが失敗したことを確認
     assert fetcher.fetch_called is True
+    assert repo.saved_history is None
 
-    # レコード保存は呼ばれていないことを確認
-    assert len(asset_record_repo.saved_records) == 0
-
-    # S3 バケットにエラー画像ファイルが存在することを確認
     object_keys = list_s3_objects(local_stack_container, "errors/")
     assert any(key.endswith(".png") for key in object_keys)
 
@@ -101,25 +112,19 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     # given
     from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
-    from tests.fixtures.mocks import MockAssetRecordWriter, MockSeleniumAssetFetcher
+    from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
 
     fetcher = MockSeleniumAssetFetcher(should_fail_extraction=True)
-    asset_record_repo = MockAssetRecordWriter()
+    repo = MockFinancialAssetRepository()
 
     # when, then
     with pytest.raises(ScrapingFailed) as exc_info:
-        main(fetcher=fetcher, asset_record_repository=asset_record_repo)
+        main(fetcher=fetcher, financial_asset_repository=repo)
 
-    # エラーオブジェクトに error_html_key が含まれることを確認
     assert exc_info.value.error_html_key is not None
     assert exc_info.value.error_html_key.startswith("errors/")
-
-    # スクレイピングは実行されたことを確認
     assert fetcher.fetch_called is True
+    assert repo.saved_history is None
 
-    # レコード保存は呼ばれていないことを確認
-    assert len(asset_record_repo.saved_records) == 0
-
-    # S3 バケットにエラー HTML ファイルが存在することを確認
     object_keys = list_s3_objects(local_stack_container, "errors/")
     assert any(key.endswith(".html") for key in object_keys)

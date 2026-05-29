@@ -1,10 +1,15 @@
 """Domain レイヤー: モデル、インターフェース、例外"""
 
-from shared.domain.asset_evaluation import AssetEvaluation
-from shared.domain.asset_record import AssetRecord
 from shared.domain.exceptions import AssetRecordError
+from shared.domain.financial_asset import (
+    AssetValuation,
+    CumulativeContributions,
+    FinancialAsset,
+    FinancialAssetHistory,
+    GainsOrLosses,
+)
+from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from .asset_record_writer import IAssetRecordWriter
 from .exceptions import (
     AssetCollectionFailed,
     ScrapingFailed,
@@ -12,10 +17,13 @@ from .exceptions import (
 
 __all__ = [
     # Models
-    "AssetEvaluation",
-    "AssetRecord",
+    "AssetValuation",
+    "CumulativeContributions",
+    "FinancialAsset",
+    "FinancialAssetHistory",
+    "GainsOrLosses",
     # Interfaces
-    "IAssetRecordWriter",
+    "IFinancialAssetRepository",
     # Exceptions
     "ScrapingFailed",
     "AssetCollectionFailed",

@@ -1,50 +1,25 @@
 from src.application import IAssetFetcher
-from src.config import AssetFetchConfig
-from src.domain import AssetEvaluation, ScrapingFailed
+from src.domain import FinancialAssetHistory, ScrapingFailed
 
 
 class MockSeleniumAssetFetcher(IAssetFetcher):
-    """Selenium WebDriver のMock実装（E2Eテスト用）
+    """Selenium WebDriver の Mock 実装（テスト用）
 
-    実際にブラウザを起動せず、事前に用意した商品別資産情報を返すMockオブジェクト
+    実際にブラウザを起動せず、事前に用意した金融資産履歴を返す Mock オブジェクト
     """
 
     def __init__(
         self,
-        mock_products: dict[str, AssetEvaluation] | None = None,
-        config: AssetFetchConfig | None = None,
-        chrome_binary_location: str = "",
-        chrome_driver_path: str = "",
+        mock_history: FinancialAssetHistory | None = None,
         should_fail: bool = False,
         should_fail_extraction: bool = False,
     ) -> None:
-        """コンストラクタ
-
-        Args:
-            mock_products: 返却する商品別資産情報（指定しない場合はデフォルト値）
-            config: フェッチ先接続設定（使用しない）
-            chrome_binary_location: Chromeバイナリの場所（使用しない）
-            chrome_driver_path: ChromeDriverのパス（使用しない）
-            should_fail: Trueの場合、スクレイピング失敗を模擬する
-            should_fail_extraction: Trueの場合、抽出失敗を模擬する
-        """
-        self.config = config
-        self.chrome_binary_location = chrome_binary_location
-        self.chrome_driver_path = chrome_driver_path
-        self.mock_products = mock_products
+        self.mock_history = mock_history
         self.should_fail = should_fail
         self.should_fail_extraction = should_fail_extraction
         self.fetch_called = False
 
-    def fetch_asset_valuation(self) -> dict[str, AssetEvaluation]:
-        """資産評価情報を返す（Mock実装）
-
-        Returns:
-            dict[str, AssetEvaluation]: 商品別の資産評価情報
-
-        Raises:
-            ScrapingFailed: should_fail=True または should_fail_extraction=True の場合
-        """
+    def fetch_asset_valuation(self) -> FinancialAssetHistory:
         self.fetch_called = True
 
         if self.should_fail:
@@ -61,9 +36,9 @@ class MockSeleniumAssetFetcher(IAssetFetcher):
             print("[Mock] Extraction failed (simulated)")
             raise ScrapingFailed.during_extraction(tmp_html_path=html_path)
 
-        if self.mock_products is None:
-            msg = "mock_products must be provided when should_fail=False and should_fail_extraction=False"
+        if self.mock_history is None:
+            msg = "mock_history must be provided when should_fail=False and should_fail_extraction=False"
             raise ValueError(msg)
 
-        print(f"[Mock] Scraping succeeded (products={len(self.mock_products)})")
-        return self.mock_products
+        print(f"[Mock] Scraping succeeded (products={len(self.mock_history.assets)})")
+        return self.mock_history
