@@ -54,6 +54,9 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
         if rows_to_delete:
             logger.info("既存行を削除しました", extra={"date": target_date, "count": len(rows_to_delete)})
 
+    def retrieve_from_with_days(self, days: int) -> FinancialAssetHistory:
+        raise NotImplementedError("asset-collection は読み取りをサポートしません")
+
     def _append_assets(self, history: FinancialAssetHistory) -> None:
         """資産レコードを末尾に追記する"""
         rows = [
