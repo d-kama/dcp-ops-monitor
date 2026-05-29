@@ -1,10 +1,17 @@
 """サマリ通知ハンドラー"""
 
-from src.application import INotifier, SummaryNotificationService
+from shared.domain.financial_asset_repository import IFinancialAssetRepository
+
+from src.application import (
+    FormatMessageUseCase,
+    INotifier,
+    NotifySummaryUseCase,
+    RetrieveAssetUseCase,
+    SummariseAssetUseCase,
+)
 from src.config.settings import get_logger, get_settings
-from src.domain import IAssetRecordReader
 from src.infrastructure import (
-    GoogleSheetAssetRecordReader,
+    GoogleSheetFinancialAssetRepository,
     LineNotifier,
     get_ssm_json_parameter,
 )
@@ -14,18 +21,18 @@ logger = get_logger()
 
 
 def main(
-    asset_repository: IAssetRecordReader | None = None,
+    asset_repository: IFinancialAssetRepository | None = None,
     notifier: INotifier | None = None,
 ) -> None:
     """メイン処理
 
     Args:
-        asset_repository: 資産レコードリーダ (テスト時に Mock 注入可能)
+        asset_repository: 金融資産リポジトリ (テスト時に Mock 注入可能)
         notifier: 通知クライアント (テスト時に Mock 注入可能)
     """
     if asset_repository is None:
         spreadsheet_parameter = get_ssm_json_parameter(name=settings.spreadsheet_parameter_name, decrypt=True)
-        asset_repository = GoogleSheetAssetRecordReader(
+        asset_repository = GoogleSheetFinancialAssetRepository(
             spreadsheet_id=spreadsheet_parameter["spreadsheet_id"],
             sheet_name=spreadsheet_parameter["sheet_name"],
             credentials=spreadsheet_parameter["credentials"],
@@ -38,6 +45,8 @@ def main(
             token=line_message_parameter["token"],
         )
 
-    service = SummaryNotificationService(asset_repository=asset_repository, notifier=notifier)
-    service.send_summary()
+    history = RetrieveAssetUseCase(repository=asset_repository).retrieve()
+    summary = SummariseAssetUseCase().summarise(history)
+    message = FormatMessageUseCase().format(summary)
+    NotifySummaryUseCase(notifier=notifier).notify(message)
     logger.info("サマリ通知処理が完了しました")
