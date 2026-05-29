@@ -13,7 +13,7 @@ def local_stack_container() -> LocalStackContainer:  # type: ignore (invalid-ret
     Returns:
         LocalStackContainer: LocalStackのコンテナ
     """
-    with LocalStackContainer(region_name="ap-northeast-1") as container:
+    with LocalStackContainer(region_name="ap-northeast-1", image="localstack/localstack:4.14.0") as container:
         os.environ["LOCAL_STACK_CONTAINER_URL"] = container.get_url()
         os.environ["AWS_ACCESS_KEY_ID"] = "dummy"
         os.environ["AWS_SECRET_ACCESS_KEY"] = "dummy"
