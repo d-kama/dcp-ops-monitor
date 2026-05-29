@@ -1,10 +1,9 @@
 from datetime import datetime
 
+from shared.domain.financial_asset import FinancialAssetHistory
+
 from src.config.settings import get_logger
-from src.domain import (
-    AssetEvaluation,
-    ScrapingFailed,
-)
+from src.domain import ScrapingFailed
 
 from .asset_fetcher_interface import IAssetFetcher
 from .error_artifact_repository import IErrorArtifactRepository
@@ -12,7 +11,7 @@ from .error_artifact_repository import IErrorArtifactRepository
 logger = get_logger()
 
 
-class AssetCollectionUseCase:
+class CollectAssetUseCase:
     def __init__(
         self,
         fetcher: IAssetFetcher,
@@ -21,7 +20,7 @@ class AssetCollectionUseCase:
         self.fetcher: IAssetFetcher = fetcher
         self.error_artifact_repository: IErrorArtifactRepository = error_artifact_repository
 
-    def collect(self) -> dict[str, AssetEvaluation]:
+    def collect(self) -> FinancialAssetHistory:
         try:
             return self.fetcher.fetch_asset_valuation()
         except ScrapingFailed as e:
