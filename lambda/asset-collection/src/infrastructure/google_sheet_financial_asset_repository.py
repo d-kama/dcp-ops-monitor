@@ -30,6 +30,10 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
             return
 
         try:
+            base_dates = {asset.base_date for asset in history.assets}
+            if len(base_dates) > 1:
+                raise AssetRecordError(f"save_daily に複数日付の資産が含まれています: {base_dates}")
+
             target_date = str(history.assets[0].base_date)
             self._delete_existing_rows(target_date)
             self._append_assets(history)
