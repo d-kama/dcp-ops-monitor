@@ -2,7 +2,7 @@ from typing import Optional
 
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.application import AssetCollectionUseCase, IAssetFetcher, SaveAssetUseCase
+from src.application import CollectAssetUseCase, IAssetFetcher, SaveAssetUseCase
 from src.config import AssetFetchConfig
 from src.config.settings import get_logger, get_settings
 from src.infrastructure import (
@@ -52,7 +52,7 @@ def main(
 
     error_repository = S3ErrorArtifactRepository(settings.data_bucket_name)
 
-    asset_collection_usecase = AssetCollectionUseCase(
+    asset_collection_usecase = CollectAssetUseCase(
         fetcher=fetcher,
         error_artifact_repository=error_repository,
     )

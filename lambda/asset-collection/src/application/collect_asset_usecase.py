@@ -11,7 +11,7 @@ from .error_artifact_repository import IErrorArtifactRepository
 logger = get_logger()
 
 
-class AssetCollectionUseCase:
+class CollectAssetUseCase:
     def __init__(
         self,
         fetcher: IAssetFetcher,
