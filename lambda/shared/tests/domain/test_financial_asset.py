@@ -22,6 +22,36 @@ def _make_asset(d: date, product: str, av: int, cc: int, gl: int) -> FinancialAs
     )
 
 
+class TestAdd:
+    def test_add__empty_history_returns_single_asset(self):
+        """空の履歴にassetを追加すると1件の履歴になる"""
+        history = FinancialAssetHistory(assets=[])
+        asset = _make_asset(date(2026, 1, 10), "商品A", 1_000_000, 900_000, 100_000)
+
+        result = history.add(asset)
+
+        assert result == FinancialAssetHistory(assets=[asset])
+
+    def test_add__returns_new_instance(self):
+        """addは元のインスタンスを変更せず新しいインスタンスを返す"""
+        history = FinancialAssetHistory(assets=[])
+        asset = _make_asset(date(2026, 1, 10), "商品A", 1_000_000, 900_000, 100_000)
+
+        result = history.add(asset)
+
+        assert result is not history
+        assert history.assets == []
+
+    def test_add__multiple_assets_accumulated(self):
+        """addを連続して呼ぶと順序を保って蓄積される"""
+        asset_a = _make_asset(date(2026, 1, 10), "商品A", 600_000, 500_000, 100_000)
+        asset_b = _make_asset(date(2026, 1, 10), "商品B", 400_000, 350_000, 50_000)
+
+        result = FinancialAssetHistory(assets=[]).add(asset_a).add(asset_b)
+
+        assert result.assets == [asset_a, asset_b]
+
+
 class TestSumLatestDay:
     def test_sum_latest_day__single_product_returns_same_values(self):
         """1商品のみの場合はその値をそのまま返す"""

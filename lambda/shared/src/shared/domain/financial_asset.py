@@ -42,7 +42,12 @@ class DailyAssetTotal(BaseModel):
 
 
 class FinancialAssetHistory(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     assets: list[FinancialAsset]
+
+    def add(self, asset: FinancialAsset) -> "FinancialAssetHistory":
+        return FinancialAssetHistory(assets=[*self.assets, asset])
 
     def asset_valuation_by_date(self) -> dict[date, AssetValuation]:
         totals: defaultdict[date, int] = defaultdict(int)
