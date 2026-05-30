@@ -9,7 +9,6 @@ from shared.domain.financial_asset import (
     GainsOrLosses,
 )
 
-from src.domain import AssetRetrievalFailed
 from tests.fixtures.mocks import MockFinancialAssetRepository, MockNotifier
 
 
@@ -51,11 +50,11 @@ def test_main__e2e_with_mocks():
 
 
 def test_main__empty_history_raises_asset_retrieval_failed():
-    """資産情報が空の場合 AssetRetrievalFailed が発生する"""
+    """資産情報が空の場合 ValueError が発生する"""
     from src.presentation.summary_notification_handler import main
 
     repository = MockFinancialAssetRepository(history=FinancialAssetHistory(assets=[]))
     notifier = MockNotifier()
 
-    with pytest.raises(AssetRetrievalFailed):
+    with pytest.raises(ValueError):
         main(asset_repository=repository, notifier=notifier)

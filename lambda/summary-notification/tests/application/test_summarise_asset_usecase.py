@@ -11,7 +11,6 @@ from shared.domain.financial_asset import (
 )
 
 from src.application import AssetSummary, SummariseAssetUseCase
-from src.domain import AssetRetrievalFailed
 
 
 def _make_asset(d: date, product: str, av: int, cc: int, gl: int) -> FinancialAsset:
@@ -74,8 +73,8 @@ class TestSummariseAssetUseCase:
         }
 
     def test_summarise__empty_history_raises_asset_retrieval_failed(self, usecase):
-        """空履歴の場合は AssetRetrievalFailed を送出する"""
+        """空履歴の場合は ValueError を送出する"""
         history = FinancialAssetHistory(assets=[])
 
-        with pytest.raises(AssetRetrievalFailed):
+        with pytest.raises(ValueError):
             usecase.summarise(history)

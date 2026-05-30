@@ -15,9 +15,6 @@ class AssetSummary(BaseModel):
 
 class SummariseAssetUseCase:
     def summarise(self, history: FinancialAssetHistory) -> AssetSummary:
-        if not history.assets:
-            raise AssetRetrievalFailed.no_assets_in_spreadsheet()
-
         return AssetSummary(
             latest_day_total=history.sum_latest_day(),
             valuations_by_date=history.asset_valuation_by_date(),

@@ -36,6 +36,8 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
     def save_daily(self, history: FinancialAssetHistory) -> None:
         raise NotImplementedError("summary-notification は書き込みをサポートしません")
 
+    # TODO: Repository内の最新日付からN日以内のデータを取得するようになっている。
+    # 実行日付からN日以内のデータとするか、検討。併せて、結果が空配列になるケースも考える。
     def retrieve_from_with_days(self, days: int) -> FinancialAssetHistory:
         if days <= 0:
             raise ValueError(f"days must be positive: {days}")

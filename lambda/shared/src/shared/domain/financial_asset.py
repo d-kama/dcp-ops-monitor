@@ -52,6 +52,9 @@ class FinancialAssetHistory(BaseModel):
 
     def sum_latest_day(self) -> DailyAssetTotal:
         """最新日付の全商品資産を合算して DailyAssetTotal を返す"""
+        if not self.assets:
+            raise ValueError("asset is empty")
+
         latest_date = max(asset.base_date for asset in self.assets)
         latest_assets = [a for a in self.assets if a.base_date == latest_date]
         return DailyAssetTotal(
