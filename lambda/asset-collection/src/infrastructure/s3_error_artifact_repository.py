@@ -2,7 +2,7 @@ import os
 
 import boto3
 
-from src.application import ArtifactUploadError, IErrorArtifactRepository
+from src.application.error_artifact_repository import ArtifactUploadError, IErrorArtifactRepository
 from src.config.settings import get_logger
 
 logger = get_logger()

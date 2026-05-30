@@ -27,8 +27,7 @@ def main(
         financial_asset_repository (Optional[IFinancialAssetRepository]): 金融資産リポジトリ（テスト時にMockを注入可能）
 
     Raises:
-        ScrapingFailed: スクレイピングまたは資産情報抽出処理失敗時
-        ArtifactUploadError: エラーアーティファクトの S3 保存失敗時
+        AssetFetchFailed: スクレイピングまたは資産情報抽出処理失敗時
         AssetRecordError: 資産レコードの保存失敗時
     """
     if fetcher is None:
@@ -40,7 +39,8 @@ def main(
             start_url=asset_fetch_config_param["start_url"],
             user_agent=settings.user_agent,
         )
-        fetcher = SeleniumAssetFetcher(config=config)
+        error_repository = S3ErrorArtifactRepository(settings.data_bucket_name)
+        fetcher = SeleniumAssetFetcher(config=config, error_repo=error_repository)
 
     if financial_asset_repository is None:
         spreadsheet_param = get_ssm_json_parameter(name=settings.spreadsheet_parameter_name, decrypt=True)
@@ -50,12 +50,7 @@ def main(
             credentials=spreadsheet_param["credentials"],
         )
 
-    error_repository = S3ErrorArtifactRepository(settings.data_bucket_name)
-
-    asset_collection_usecase = CollectAssetUseCase(
-        fetcher=fetcher,
-        error_artifact_repository=error_repository,
-    )
+    asset_collection_usecase = CollectAssetUseCase(fetcher=fetcher)
     save_asset_usecase = SaveAssetUseCase(repository=financial_asset_repository)
 
     daily_assets = asset_collection_usecase.collect()

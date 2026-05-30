@@ -10,11 +10,6 @@ from shared.domain.financial_asset import (
 )
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from .exceptions import (
-    AssetCollectionFailed,
-    ScrapingFailed,
-)
-
 __all__ = [
     # Models
     "AssetValuation",
@@ -25,7 +20,5 @@ __all__ = [
     # Interfaces
     "IFinancialAssetRepository",
     # Exceptions
-    "ScrapingFailed",
-    "AssetCollectionFailed",
     "AssetRecordError",
 ]
