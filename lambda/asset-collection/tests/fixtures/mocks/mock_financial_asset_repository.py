@@ -9,3 +9,6 @@ class MockFinancialAssetRepository(IFinancialAssetRepository):
 
     def save_daily(self, history: FinancialAssetHistory) -> None:
         self.saved_history = history
+
+    def retrieve_from_with_days(self, days: int) -> FinancialAssetHistory:
+        raise NotImplementedError("asset-collection は読み取りをサポートしません")

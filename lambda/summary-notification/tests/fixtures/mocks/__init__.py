@@ -1,4 +1,4 @@
-from .mock_asset_record_reader import MockAssetRecordReader
+from .mock_financial_asset_repository import MockFinancialAssetRepository
 from .mock_notifier import MockNotifier
 
-__all__ = ["MockAssetRecordReader", "MockNotifier"]
+__all__ = ["MockFinancialAssetRepository", "MockNotifier"]
