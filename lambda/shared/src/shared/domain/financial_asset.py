@@ -23,6 +23,8 @@ class AssetValuation(BaseModel):
 
 
 class FinancialAsset(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
     product_name: str
     base_date: date
     cumulative_contributions: CumulativeContributions
