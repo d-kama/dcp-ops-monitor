@@ -79,11 +79,11 @@ class SeleniumAssetFetcher(IAssetFetcher):
 
         self._login()
         self._navigate_to_asset_page()
-        history = self._extract_asset_valuation()
+        daily_assets = self._extract_asset_valuation()
         self._logout()
         self.driver.quit()
         logger.info("資産評価情報の取得完了")
-        return history
+        return daily_assets
 
     def _login(self) -> None:
         try:
@@ -133,9 +133,9 @@ class SeleniumAssetFetcher(IAssetFetcher):
         """
         try:
             logger.info("資産情報の抽出開始")
-            assets = self._extract_product_assets()
+            daily_assets = self._extract_product_assets()
             logger.info("資産情報の抽出完了")
-            return FinancialAssetHistory(assets=assets)
+            return daily_assets
         except Exception as e:
             html_path = "/tmp/error_extraction.html"
             try:
@@ -148,11 +148,11 @@ class SeleniumAssetFetcher(IAssetFetcher):
             self.driver.quit()
             raise ScrapingFailed.during_extraction(tmp_html_path=html_path) from e
 
-    def _extract_product_assets(self) -> list[FinancialAsset]:
+    def _extract_product_assets(self) -> FinancialAssetHistory:
         """商品別資産を抽出する
 
         Returns:
-            list[FinancialAsset]: 商品別資産情報
+            FinancialAssetHistory: 商品別資産情報
         """
         logger.info("商品別の資産評価額の抽出開始")
 
@@ -160,7 +160,7 @@ class SeleniumAssetFetcher(IAssetFetcher):
         product_info = self.driver.find_element(By.ID, "prodInfo")
         products = product_info.find_elements(By.CSS_SELECTOR, ".infoDetailUnit_02.pc_mb30")
 
-        financial_assets: list[FinancialAsset] = []
+        daily_assets = FinancialAssetHistory(assets=[])
         for product in products:
             table_body = product.find_element(By.TAG_NAME, "tbody")
             table_rows = table_body.find_elements(By.TAG_NAME, "tr")
@@ -179,7 +179,7 @@ class SeleniumAssetFetcher(IAssetFetcher):
                     value=parse_yen_amount(table_rows[2].find_elements(By.TAG_NAME, "td")[2].text)
                 ),
             )
-            financial_assets.append(asset)
+            daily_assets = daily_assets.add(asset)
             logger.debug(
                 f"商品別資産評価額情報: {product_name}.",
                 extra=asset.model_dump(),
@@ -188,11 +188,11 @@ class SeleniumAssetFetcher(IAssetFetcher):
         logger.info(
             "商品別の資産評価額の抽出完了",
             extra={
-                "product_count": len(financial_assets),
-                "product_names": [a.product_name for a in financial_assets],
+                "product_count": len(daily_assets.assets),
+                "product_names": [a.product_name for a in daily_assets.assets],
             },
         )
-        return financial_assets
+        return daily_assets
 
     def _logout(self) -> None:
         try:

@@ -20,24 +20,24 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
         spreadsheet = client.open_by_key(spreadsheet_id)
         self.worksheet = spreadsheet.worksheet(sheet_name)
 
-    def save_daily(self, history: FinancialAssetHistory) -> None:
+    def save_daily(self, daily_assets: FinancialAssetHistory) -> None:
         """1日分の金融資産履歴をスプレッドシートに保存する
 
         Raises:
             AssetRecordError: レコード保存失敗時
         """
-        if not history.assets:
+        if not daily_assets.assets:
             return
 
         try:
-            base_dates = {asset.base_date for asset in history.assets}
+            base_dates = {asset.base_date for asset in daily_assets.assets}
             if len(base_dates) > 1:
                 raise AssetRecordError(f"save_daily に複数日付の資産が含まれています: {base_dates}")
 
-            target_date = str(history.assets[0].base_date)
+            target_date = str(daily_assets.assets[0].base_date)
             self._delete_existing_rows(target_date)
-            self._append_assets(history)
-            logger.info("金融資産履歴を保存しました", extra={"date": target_date, "count": len(history.assets)})
+            self._append_assets(daily_assets)
+            logger.info("金融資産履歴を保存しました", extra={"date": target_date, "count": len(daily_assets.assets)})
         except AssetRecordError:
             raise
         except Exception as e:
@@ -57,7 +57,7 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
     def retrieve_from_with_days(self, days: int) -> FinancialAssetHistory:
         raise NotImplementedError("asset-collection は読み取りをサポートしません")
 
-    def _append_assets(self, history: FinancialAssetHistory) -> None:
+    def _append_assets(self, daily_assets: FinancialAssetHistory) -> None:
         """資産レコードを末尾に追記する"""
         rows = [
             [
@@ -67,6 +67,6 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
                 asset.cumulative_contributions.value,
                 asset.gains_or_losses.value,
             ]
-            for asset in history.assets
+            for asset in daily_assets.assets
         ]
         self.worksheet.append_rows(rows, value_input_option="RAW")
