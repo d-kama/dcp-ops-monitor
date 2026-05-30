@@ -70,9 +70,9 @@ def test_main_e2e_with_mocks(valid_history):
 
     # then
     assert fetcher.fetch_called is True
-    assert repo.saved_history is not None
-    assert len(repo.saved_history.assets) == 3
-    product_names = {a.product_name for a in repo.saved_history.assets}
+    assert repo.saved_daily_assets is not None
+    assert len(repo.saved_daily_assets.assets) == 3
+    product_names = {a.product_name for a in repo.saved_daily_assets.assets}
     assert product_names == {"プロダクト_1", "プロダクト_2", "プロダクト_3"}
 
 
@@ -97,7 +97,7 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     assert exc_info.value.error_screenshot_key is not None
     assert exc_info.value.error_screenshot_key.startswith("errors/")
     assert fetcher.fetch_called is True
-    assert repo.saved_history is None
+    assert repo.saved_daily_assets is None
 
     object_keys = list_s3_objects(local_stack_container, "errors/")
     assert any(key.endswith(".png") for key in object_keys)
@@ -124,7 +124,7 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     assert exc_info.value.error_html_key is not None
     assert exc_info.value.error_html_key.startswith("errors/")
     assert fetcher.fetch_called is True
-    assert repo.saved_history is None
+    assert repo.saved_daily_assets is None
 
     object_keys = list_s3_objects(local_stack_container, "errors/")
     assert any(key.endswith(".html") for key in object_keys)

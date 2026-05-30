@@ -58,5 +58,5 @@ def main(
     )
     save_asset_usecase = SaveAssetUseCase(repository=financial_asset_repository)
 
-    history = asset_collection_usecase.collect()
-    save_asset_usecase.save(history)
+    daily_assets = asset_collection_usecase.collect()
+    save_asset_usecase.save(daily_assets)
