@@ -1,5 +1,5 @@
-from src.application import IAssetFetcher
-from src.domain import FinancialAssetHistory, ScrapingFailed
+from src.application import AssetFetchFailed, IAssetFetcher
+from src.domain import FinancialAssetHistory
 
 
 class MockSeleniumAssetFetcher(IAssetFetcher):
@@ -23,18 +23,12 @@ class MockSeleniumAssetFetcher(IAssetFetcher):
         self.fetch_called = True
 
         if self.should_fail:
-            screenshot_path = "/tmp/mock_error.png"
-            with open(screenshot_path, "wb") as f:
-                f.write(b"Mock error image content")
             print("[Mock] Scraping failed (simulated)")
-            raise ScrapingFailed.during_login(tmp_screenshot_path=screenshot_path)
+            raise AssetFetchFailed("ログイン処理に失敗しました")
 
         if self.should_fail_extraction:
-            html_path = "/tmp/mock_error_extraction.html"
-            with open(html_path, "w", encoding="utf-8") as f:
-                f.write("<html>invalid</html>")
             print("[Mock] Extraction failed (simulated)")
-            raise ScrapingFailed.during_extraction(tmp_html_path=html_path)
+            raise AssetFetchFailed("資産情報の抽出に失敗しました")
 
         if self.mock_history is None:
             msg = "mock_history must be provided when should_fail=False and should_fail_extraction=False"

@@ -3,6 +3,10 @@ from abc import ABC, abstractmethod
 from shared.domain.financial_asset import FinancialAssetHistory
 
 
+class AssetFetchFailed(Exception):
+    pass
+
+
 class IAssetFetcher(ABC):
     """スクレイピングドライバー抽象クラス"""
 
@@ -17,6 +21,6 @@ class IAssetFetcher(ABC):
             FinancialAssetHistory: 商品別の資産評価情報
 
         Raises:
-            ScrapingFailed: スクレイピングまたは資産情報抽出に失敗した場合
+            AssetFetchFailed: スクレイピングまたは資産情報抽出に失敗した場合
         """
         pass

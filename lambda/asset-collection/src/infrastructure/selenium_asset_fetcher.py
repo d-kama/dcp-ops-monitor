@@ -12,13 +12,17 @@ from shared.domain.financial_asset import (
     GainsOrLosses,
 )
 
-from src.application import IAssetFetcher
+from src.application import AssetFetchFailed, IAssetFetcher
+from src.application.error_artifact_repository import IErrorArtifactRepository
 from src.config import AssetFetchConfig
 from src.config.settings import get_logger
-from src.domain import ScrapingFailed
 from src.infrastructure.yen_parser import parse_yen_amount
 
 logger = get_logger()
+
+
+class SeleniumAssetFetchFailed(AssetFetchFailed):
+    pass
 
 
 class SeleniumAssetFetcher(IAssetFetcher):
@@ -27,6 +31,7 @@ class SeleniumAssetFetcher(IAssetFetcher):
     def __init__(
         self,
         config: AssetFetchConfig,
+        error_repo: IErrorArtifactRepository,
         chrome_binary_location: str = "/opt/chrome/chrome",
         chrome_driver_path: str = "/opt/chromedriver",
     ) -> None:
@@ -38,6 +43,7 @@ class SeleniumAssetFetcher(IAssetFetcher):
         self.password = config.login_password
         self.birthdate = config.login_birthdate
         self.start_url = config.start_url
+        self._error_repo = error_repo
 
     def _get_driver(self) -> webdriver.Chrome:
         chrome_options = webdriver.ChromeOptions()
@@ -106,7 +112,16 @@ class SeleniumAssetFetcher(IAssetFetcher):
             screenshot_path = "/tmp/error_login.png"
             self.driver.save_screenshot(screenshot_path)
             self.driver.quit()
-            raise ScrapingFailed.during_login(tmp_screenshot_path=screenshot_path) from e
+            error_extra = {}
+            try:
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                key = f"errors/{timestamp}.png"
+                self._error_repo.store(key=key, file_path=screenshot_path)
+                error_extra = {"error_screenshot_key": key}
+            except Exception as artifact_error:
+                logger.warning("エラーアーティファクトの保存に失敗しました。", extra={"error": str(artifact_error)})
+            logger.error("ログイン処理に失敗しました。", extra=error_extra)
+            raise SeleniumAssetFetchFailed("ログイン処理に失敗しました") from e
 
     def _navigate_to_asset_page(self) -> None:
         """資産評価額照会ページへ遷移する"""
@@ -123,7 +138,16 @@ class SeleniumAssetFetcher(IAssetFetcher):
             self.driver.save_screenshot(screenshot_path)
             self._logout()
             self.driver.quit()
-            raise ScrapingFailed.during_page_fetch(tmp_screenshot_path=screenshot_path) from e
+            error_extra = {}
+            try:
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                key = f"errors/{timestamp}.png"
+                self._error_repo.store(key=key, file_path=screenshot_path)
+                error_extra = {"error_screenshot_key": key}
+            except Exception as artifact_error:
+                logger.warning("エラーアーティファクトの保存に失敗しました。", extra={"error": str(artifact_error)})
+            logger.error("資産評価額照会ページの取得に失敗しました。", extra=error_extra)
+            raise SeleniumAssetFetchFailed("資産評価額照会ページの取得に失敗しました") from e
 
     def _extract_asset_valuation(self) -> FinancialAssetHistory:
         """資産評価額照会ページから商品別の資産情報を抽出する
@@ -138,15 +162,20 @@ class SeleniumAssetFetcher(IAssetFetcher):
             return daily_assets
         except Exception as e:
             html_path = "/tmp/error_extraction.html"
+            error_extra = {}
             try:
                 with open(html_path, "w", encoding="utf-8") as f:
                     f.write(self.driver.page_source)
-            except Exception as write_error:
-                logger.warning("HTML ファイルの保存に失敗しました。", error=str(write_error))
-                html_path = None
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                key = f"errors/{timestamp}.html"
+                self._error_repo.store(key=key, file_path=html_path)
+                error_extra = {"error_html_key": key}
+            except Exception as artifact_error:
+                logger.warning("エラーアーティファクトの保存に失敗しました。", extra={"error": str(artifact_error)})
             self._logout()
             self.driver.quit()
-            raise ScrapingFailed.during_extraction(tmp_html_path=html_path) from e
+            logger.error("資産情報の抽出に失敗しました。", extra=error_extra)
+            raise SeleniumAssetFetchFailed("資産情報の抽出に失敗しました") from e
 
     def _extract_product_assets(self) -> FinancialAssetHistory:
         """商品別資産を抽出する

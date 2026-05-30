@@ -1,8 +1,8 @@
-import os
 from datetime import date
 
 import pytest
 
+from src.application import AssetFetchFailed
 from src.domain import (
     AssetValuation,
     CumulativeContributions,
@@ -10,16 +10,6 @@ from src.domain import (
     FinancialAssetHistory,
     GainsOrLosses,
 )
-
-
-def list_s3_objects(local_stack_container, prefix: str) -> list[str]:
-    """指定されたプレフィックスのS3オブジェクトキーを取得する"""
-    client = local_stack_container.get_client("s3")
-    response = client.list_objects_v2(
-        Bucket=os.environ["DATA_BUCKET_NAME"],
-        Prefix=prefix,
-    )
-    return [obj["Key"] for obj in response.get("Contents", [])]
 
 
 @pytest.fixture
@@ -53,7 +43,7 @@ def valid_history() -> FinancialAssetHistory:
     )
 
 
-def test_main_e2e_with_mocks(valid_history):
+def test_main__all_mocks_succeed__saves_assets(valid_history):
     """main関数のE2Eテスト（Mockを使用）
 
     エンドツーエンドで処理が正常に完了することを確認する
@@ -76,14 +66,12 @@ def test_main_e2e_with_mocks(valid_history):
     assert product_names == {"プロダクト_1", "プロダクト_2", "プロダクト_3"}
 
 
-def test_main_e2e_with_scraping_error(local_stack_container):
+def test_main__scraping_fails__raises_asset_fetch_failed(valid_history):
     """スクレイピングエラー時のE2Eテスト
 
-    スクレイピングが失敗した場合、例外が発生することを確認する
-    また、エラー画像が S3 の errors/ プレフィックスにアップロードされることを確認する
+    スクレイピングが失敗した場合、AssetFetchFailed 例外が伝播することを確認する
     """
     # given
-    from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
     from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
 
@@ -91,26 +79,19 @@ def test_main_e2e_with_scraping_error(local_stack_container):
     repo = MockFinancialAssetRepository()
 
     # when, then
-    with pytest.raises(ScrapingFailed) as exc_info:
+    with pytest.raises(AssetFetchFailed):
         main(fetcher=fetcher, financial_asset_repository=repo)
 
-    assert exc_info.value.error_screenshot_key is not None
-    assert exc_info.value.error_screenshot_key.startswith("errors/")
     assert fetcher.fetch_called is True
     assert repo.saved_daily_assets is None
 
-    object_keys = list_s3_objects(local_stack_container, "errors/")
-    assert any(key.endswith(".png") for key in object_keys)
 
-
-def test_main_e2e_with_extraction_error(local_stack_container):
+def test_main__extraction_fails__raises_asset_fetch_failed(valid_history):
     """抽出エラー時のE2Eテスト
 
-    資産情報の抽出に失敗した場合、例外が発生することを確認する
-    また、エラー HTML ファイルが S3 の errors/ プレフィックスにアップロードされることを確認する
+    資産情報の抽出に失敗した場合、AssetFetchFailed 例外が伝播することを確認する
     """
     # given
-    from src.domain import ScrapingFailed
     from src.presentation.asset_collection_handler import main
     from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
 
@@ -118,13 +99,8 @@ def test_main_e2e_with_extraction_error(local_stack_container):
     repo = MockFinancialAssetRepository()
 
     # when, then
-    with pytest.raises(ScrapingFailed) as exc_info:
+    with pytest.raises(AssetFetchFailed):
         main(fetcher=fetcher, financial_asset_repository=repo)
 
-    assert exc_info.value.error_html_key is not None
-    assert exc_info.value.error_html_key.startswith("errors/")
     assert fetcher.fetch_called is True
     assert repo.saved_daily_assets is None
-
-    object_keys = list_s3_objects(local_stack_container, "errors/")
-    assert any(key.endswith(".html") for key in object_keys)
