@@ -1,5 +1,3 @@
-"""Lambda handler エントリーポイント"""
-
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
@@ -13,6 +11,11 @@ from src.infrastructure import (
 from src.presentation import Main
 
 logger = get_logger()
+
+
+@logger.inject_lambda_context
+def handler(event: dict, context: LambdaContext) -> str | None:
+    return Main(build_usecase()).run()
 
 
 def _build_financial_asset_repository(settings: EnvSettings) -> IFinancialAssetRepository:
@@ -38,18 +41,3 @@ def build_usecase() -> INotifyWeeklySummaryUseCase:
         repository=_build_financial_asset_repository(settings),
         notifier=_build_notifier(settings),
     )
-
-
-@logger.inject_lambda_context
-def handler(event: dict, context: LambdaContext) -> str | None:
-    """Lambda handler エントリーポイント
-
-    Args:
-        event: Lambda イベント（EventBridge から空の dict）
-        context: Lambda コンテキスト
-
-    Returns:
-        str | None: 成功時は "Success"
-    """
-    Main(build_usecase()).run()
-    return "Success"
