@@ -45,8 +45,8 @@ def main(
             token=line_message_parameter["token"],
         )
 
-    history = RetrieveAssetUseCase(repository=asset_repository).retrieve()
-    summary = SummariseAssetUseCase().summarise(history)
-    message = FormatMessageUseCase().format(summary)
-    NotifySummaryUseCase(notifier=notifier).notify(message)
+    history = RetrieveAssetUseCase(repository=asset_repository).execute()
+    summary = SummariseAssetUseCase().execute(history)
+    message = FormatMessageUseCase().execute(summary)
+    NotifySummaryUseCase(notifier=notifier).execute(message)
     logger.info("サマリ通知処理が完了しました")

@@ -35,7 +35,7 @@ class TestRetrieveAssetUseCase:
         repository = MockFinancialAssetRepository(history=sample_history)
         usecase = RetrieveAssetUseCase(repository=repository)
 
-        result = usecase.retrieve()
+        result = usecase.execute()
 
         assert result == sample_history
 
@@ -44,7 +44,7 @@ class TestRetrieveAssetUseCase:
         repository = MockFinancialAssetRepository(history=sample_history)
         usecase = RetrieveAssetUseCase(repository=repository)
 
-        usecase.retrieve()
+        usecase.execute()
 
         assert repository.retrieve_called
         assert repository.last_days_arg == 7
@@ -54,7 +54,7 @@ class TestRetrieveAssetUseCase:
         repository = MockFinancialAssetRepository(history=FinancialAssetHistory(assets=[]))
         usecase = RetrieveAssetUseCase(repository=repository)
 
-        result = usecase.retrieve()
+        result = usecase.execute()
 
         assert result == FinancialAssetHistory(assets=[])
 
@@ -64,4 +64,4 @@ class TestRetrieveAssetUseCase:
         usecase = RetrieveAssetUseCase(repository=repository)
 
         with pytest.raises(AssetRetrievalFailed):
-            usecase.retrieve()
+            usecase.execute()

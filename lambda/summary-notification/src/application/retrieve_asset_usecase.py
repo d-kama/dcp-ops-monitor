@@ -8,5 +8,5 @@ class RetrieveAssetUseCase:
     def __init__(self, repository: IFinancialAssetRepository) -> None:
         self.repository = repository
 
-    def retrieve(self) -> FinancialAssetHistory:
+    def execute(self) -> FinancialAssetHistory:
         return self.repository.retrieve_from_with_days(self.DAYS)

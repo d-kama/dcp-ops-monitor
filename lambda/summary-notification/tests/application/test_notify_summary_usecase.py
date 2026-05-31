@@ -11,7 +11,7 @@ class TestNotifySummaryUseCase:
         notifier = MockNotifier()
         usecase = NotifySummaryUseCase(notifier=notifier)
 
-        usecase.notify("テストメッセージ")
+        usecase.execute("テストメッセージ")
 
         assert notifier.notify_called
 
@@ -20,7 +20,7 @@ class TestNotifySummaryUseCase:
         notifier = MockNotifier()
         usecase = NotifySummaryUseCase(notifier=notifier)
 
-        usecase.notify("テストメッセージ")
+        usecase.execute("テストメッセージ")
 
         assert len(notifier.messages_sent) == 1
 
@@ -29,7 +29,7 @@ class TestNotifySummaryUseCase:
         notifier = MockNotifier()
         usecase = NotifySummaryUseCase(notifier=notifier)
 
-        usecase.notify("確定拠出年金 運用状況通知Bot")
+        usecase.execute("確定拠出年金 運用状況通知Bot")
 
         assert notifier.messages_sent[0] == "確定拠出年金 運用状況通知Bot"
 
@@ -43,4 +43,4 @@ class TestNotifySummaryUseCase:
         usecase = NotifySummaryUseCase(notifier=FailingNotifier())
 
         with pytest.raises(NotificationFailed):
-            usecase.notify("テストメッセージ")
+            usecase.execute("テストメッセージ")

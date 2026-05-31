@@ -14,7 +14,7 @@ class AssetSummary(BaseModel):
 
 
 class SummariseAssetUseCase:
-    def summarise(self, history: FinancialAssetHistory) -> AssetSummary:
+    def execute(self, history: FinancialAssetHistory) -> AssetSummary:
         return AssetSummary(
             latest_day_total=history.sum_latest_day(),
             valuations_by_date=history.asset_valuation_by_date(),

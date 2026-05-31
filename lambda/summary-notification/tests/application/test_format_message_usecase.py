@@ -33,7 +33,7 @@ class TestFormatMessageUseCase:
         """メッセージにヘッダーが含まれる"""
         summary = _make_summary(date(2026, 1, 10), 900_000, 300_000, 1_200_000)
 
-        result = FormatMessageUseCase().format(summary)
+        result = FormatMessageUseCase().execute(summary)
 
         assert "確定拠出年金 運用状況通知Bot" in result
 
@@ -41,7 +41,7 @@ class TestFormatMessageUseCase:
         """メッセージに最新日の合計資産情報が含まれる"""
         summary = _make_summary(date(2026, 1, 10), 900_000, 300_000, 1_200_000)
 
-        result = FormatMessageUseCase().format(summary)
+        result = FormatMessageUseCase().execute(summary)
 
         assert "拠出金額累計: 900,000円" in result
         assert "評価損益: 300,000円" in result
@@ -60,7 +60,7 @@ class TestFormatMessageUseCase:
             },
         )
 
-        result = FormatMessageUseCase().format(summary)
+        result = FormatMessageUseCase().execute(summary)
 
         assert "資産評価額推移（直近1週間）" in result
         assert "2026-01-10: 1,200,000円 +5,000円" in result
@@ -70,7 +70,7 @@ class TestFormatMessageUseCase:
         """valuations_by_date が空なら推移セクションは表示されない"""
         summary = _make_summary(date(2026, 1, 10), 900_000, 300_000, 1_200_000)
 
-        result = FormatMessageUseCase().format(summary)
+        result = FormatMessageUseCase().execute(summary)
 
         assert "資産評価額推移" not in result
 
@@ -88,7 +88,7 @@ class TestFormatMessageUseCase:
             },
         )
 
-        result = FormatMessageUseCase().format(summary)
+        result = FormatMessageUseCase().execute(summary)
 
         idx_10 = result.index("2026-01-10")
         idx_9 = result.index("2026-01-09")
@@ -127,6 +127,6 @@ class TestFormatMessageUseCase:
             "2025-12-01: 2,720,000円 -\n"
         )
 
-        result = FormatMessageUseCase().format(summary)
+        result = FormatMessageUseCase().execute(summary)
 
         assert result == expected

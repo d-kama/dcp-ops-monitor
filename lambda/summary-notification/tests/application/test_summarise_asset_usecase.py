@@ -33,7 +33,7 @@ class TestSummariseAssetUseCase:
         """有効な履歴から AssetSummary が返る"""
         history = FinancialAssetHistory(assets=[_make_asset(date(2026, 1, 10), "商品A", 1_000_000, 900_000, 100_000)])
 
-        result = usecase.summarise(history)
+        result = usecase.execute(history)
 
         assert isinstance(result, AssetSummary)
 
@@ -47,7 +47,7 @@ class TestSummariseAssetUseCase:
             ]
         )
 
-        result = usecase.summarise(history)
+        result = usecase.execute(history)
 
         assert result.latest_day_total == DailyAssetTotal(
             base_date=date(2026, 1, 10),
@@ -65,7 +65,7 @@ class TestSummariseAssetUseCase:
             ]
         )
 
-        result = usecase.summarise(history)
+        result = usecase.execute(history)
 
         assert result.valuations_by_date == {
             date(2026, 1, 10): AssetValuation(value=1_000_000),
@@ -77,4 +77,4 @@ class TestSummariseAssetUseCase:
         history = FinancialAssetHistory(assets=[])
 
         with pytest.raises(ValueError):
-            usecase.summarise(history)
+            usecase.execute(history)

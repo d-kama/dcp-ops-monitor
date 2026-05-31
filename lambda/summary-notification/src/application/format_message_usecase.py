@@ -19,7 +19,7 @@ _WEEKLY_HEADER = "資産評価額推移（直近1週間）\n"
 
 
 class FormatMessageUseCase:
-    def format(self, summary: AssetSummary) -> str:
+    def execute(self, summary: AssetSummary) -> str:
         weekly_section = self._build_weekly_section(summary.valuations_by_date)
         total = summary.latest_day_total
         return _TEMPLATE.substitute(

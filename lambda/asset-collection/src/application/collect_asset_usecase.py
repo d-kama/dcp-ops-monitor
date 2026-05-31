@@ -10,5 +10,5 @@ class CollectAssetUseCase:
     ) -> None:
         self.fetcher: IAssetFetcher = fetcher
 
-    def collect(self) -> FinancialAssetHistory:
+    def execute(self) -> FinancialAssetHistory:
         return self.fetcher.fetch_asset_valuation()
