@@ -9,7 +9,7 @@ from shared.domain.financial_asset import (
     GainsOrLosses,
 )
 
-from src.application import NotifyWeeklySummaryUseCase
+from src.application import INotifyWeeklySummaryUseCase, NotifyWeeklySummaryUseCase
 from src.application.notifier import INotifier, NotificationFailed
 from src.domain import AssetRetrievalFailed
 from tests.fixtures.mocks import MockFinancialAssetRepository, MockNotifier
@@ -192,3 +192,68 @@ class TestNotifyWeeklySummaryUseCase:
         usecase.execute()
 
         assert notifier.messages_sent[0] == expected
+
+
+class TestMain:
+    """presentation.Main クラスの E2E テスト"""
+
+    def _make_history(self, *days_and_products: tuple[date, str, int, int, int]) -> FinancialAssetHistory:
+        return FinancialAssetHistory(
+            assets=[
+                FinancialAsset(
+                    base_date=d,
+                    product_name=product,
+                    asset_valuation=AssetValuation(value=av),
+                    cumulative_contributions=CumulativeContributions(value=cc),
+                    gains_or_losses=GainsOrLosses(value=gl),
+                )
+                for d, product, av, cc, gl in days_and_products
+            ]
+        )
+
+    def test_main__run_delegates_to_usecase(self):
+        """Main.run() が usecase.execute() に委譲する"""
+        from src.presentation import Main
+
+        history = self._make_history(
+            (date(2026, 2, 14), "商品A", 600_000, 450_000, 150_000),
+            (date(2026, 2, 14), "商品B", 600_000, 450_000, 150_000),
+            (date(2026, 2, 13), "商品A", 590_000, 450_000, 140_000),
+        )
+        repository = MockFinancialAssetRepository(history=history)
+        notifier = MockNotifier()
+        usecase = NotifyWeeklySummaryUseCase(repository=repository, notifier=notifier)
+
+        main = Main(usecase=usecase)
+        main.run()
+
+        assert repository.retrieve_called
+        assert notifier.notify_called
+        assert len(notifier.messages_sent) == 1
+        message = notifier.messages_sent[0]
+        assert "確定拠出年金 運用状況通知Bot" in message
+        assert "1,200,000円" in message
+
+    def test_main__accepts_inotify_weekly_summary_usecase(self):
+        """Main の __init__ が INotifyWeeklySummaryUseCase を受け付ける"""
+        from src.presentation import Main
+
+        class StubUseCase(INotifyWeeklySummaryUseCase):
+            def execute(self) -> None:
+                pass
+
+        main = Main(usecase=StubUseCase())
+        assert isinstance(main, Main)
+
+    def test_main__empty_history_raises_value_error(self):
+        """空の資産履歴の場合 ValueError が伝播する"""
+        from src.presentation import Main
+
+        repository = MockFinancialAssetRepository(history=FinancialAssetHistory(assets=[]))
+        notifier = MockNotifier()
+        usecase = NotifyWeeklySummaryUseCase(repository=repository, notifier=notifier)
+
+        main = Main(usecase=usecase)
+
+        with pytest.raises(ValueError):
+            main.run()
