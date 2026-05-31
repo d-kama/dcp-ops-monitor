@@ -1,30 +1,25 @@
 from collections import defaultdict
+from dataclasses import dataclass, field
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict
 
-
-class CumulativeContributions(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+@dataclass(frozen=True)
+class CumulativeContributions:
     value: int
 
 
-class GainsOrLosses(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+@dataclass(frozen=True)
+class GainsOrLosses:
     value: int
 
 
-class AssetValuation(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+@dataclass(frozen=True)
+class AssetValuation:
     value: int
 
 
-class FinancialAsset(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+@dataclass(frozen=True)
+class FinancialAsset:
     product_name: str
     base_date: date
     cumulative_contributions: CumulativeContributions
@@ -32,10 +27,9 @@ class FinancialAsset(BaseModel):
     asset_valuation: AssetValuation
 
 
-class DailyAssetTotal(BaseModel):
-    """1日分の全商品合算資産（FinancialAsset から product_name を除いた DTO）"""
-
-    model_config = ConfigDict(frozen=True)
+@dataclass(frozen=True)
+class LatestPortfolioTotal:
+    """1日分の全商品合算資産を表す Value Object"""
 
     base_date: date
     cumulative_contributions: CumulativeContributions
@@ -43,10 +37,9 @@ class DailyAssetTotal(BaseModel):
     asset_valuation: AssetValuation
 
 
-class FinancialAssetHistory(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    assets: list[FinancialAsset]
+@dataclass(frozen=True)
+class FinancialAssetHistory:
+    assets: list[FinancialAsset] = field(default_factory=list)
 
     def add(self, asset: FinancialAsset) -> "FinancialAssetHistory":
         return FinancialAssetHistory(assets=[*self.assets, asset])
@@ -57,14 +50,14 @@ class FinancialAssetHistory(BaseModel):
             totals[asset.base_date] += asset.asset_valuation.value
         return {d: AssetValuation(value=v) for d, v in totals.items()}
 
-    def sum_latest_day(self) -> DailyAssetTotal:
-        """最新日付の全商品資産を合算して DailyAssetTotal を返す"""
+    def sum_latest_day(self) -> LatestPortfolioTotal:
+        """最新日付の全商品資産を合算して LatestPortfolioTotal を返す"""
         if not self.assets:
             raise ValueError("asset is empty")
 
         latest_date = max(asset.base_date for asset in self.assets)
         latest_assets = [a for a in self.assets if a.base_date == latest_date]
-        return DailyAssetTotal(
+        return LatestPortfolioTotal(
             base_date=latest_date,
             cumulative_contributions=CumulativeContributions(
                 value=sum(a.cumulative_contributions.value for a in latest_assets)
