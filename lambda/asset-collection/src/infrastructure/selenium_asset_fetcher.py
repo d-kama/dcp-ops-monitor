@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 from tempfile import mkdtemp
 from zoneinfo import ZoneInfo
@@ -212,7 +213,7 @@ class SeleniumAssetFetcher(IAssetFetcher):
             daily_assets = daily_assets.add(asset)
             logger.debug(
                 f"商品別資産評価額情報: {product_name}.",
-                extra=asset.model_dump(),
+                extra=asdict(asset),
             )
 
         logger.info(

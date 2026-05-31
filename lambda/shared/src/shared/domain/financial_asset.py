@@ -1,30 +1,25 @@
 from collections import defaultdict
+from dataclasses import dataclass, field
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict
 
-
-class CumulativeContributions(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+@dataclass(frozen=True)
+class CumulativeContributions:
     value: int
 
 
-class GainsOrLosses(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+@dataclass(frozen=True)
+class GainsOrLosses:
     value: int
 
 
-class AssetValuation(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+@dataclass(frozen=True)
+class AssetValuation:
     value: int
 
 
-class FinancialAsset(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
+@dataclass(frozen=True)
+class FinancialAsset:
     product_name: str
     base_date: date
     cumulative_contributions: CumulativeContributions
@@ -32,10 +27,9 @@ class FinancialAsset(BaseModel):
     asset_valuation: AssetValuation
 
 
-class DailyAssetTotal(BaseModel):
+@dataclass(frozen=True)
+class DailyAssetTotal:
     """1日分の全商品合算資産（FinancialAsset から product_name を除いた DTO）"""
-
-    model_config = ConfigDict(frozen=True)
 
     base_date: date
     cumulative_contributions: CumulativeContributions
@@ -43,10 +37,9 @@ class DailyAssetTotal(BaseModel):
     asset_valuation: AssetValuation
 
 
-class FinancialAssetHistory(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    assets: list[FinancialAsset]
+@dataclass(frozen=True)
+class FinancialAssetHistory:
+    assets: list[FinancialAsset] = field(default_factory=list)
 
     def add(self, asset: FinancialAsset) -> "FinancialAssetHistory":
         return FinancialAssetHistory(assets=[*self.assets, asset])

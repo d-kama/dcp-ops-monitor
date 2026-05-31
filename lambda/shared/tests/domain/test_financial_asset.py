@@ -109,3 +109,42 @@ class TestSumLatestDay:
         result = history.sum_latest_day()
 
         assert result.gains_or_losses == GainsOrLosses(value=-150_000)
+
+
+class TestAssetValuationByDate:
+    def test_asset_valuation_by_date__multiple_products_on_same_date_are_summed(self):
+        """同一日付の複数商品の資産評価額が合算される"""
+        history = FinancialAssetHistory(
+            assets=[
+                _make_asset(date(2026, 1, 10), "商品A", 600_000, 500_000, 100_000),
+                _make_asset(date(2026, 1, 10), "商品B", 400_000, 350_000, 50_000),
+            ]
+        )
+
+        result = history.asset_valuation_by_date()
+
+        assert result == {date(2026, 1, 10): AssetValuation(value=1_000_000)}
+
+    def test_asset_valuation_by_date__multiple_dates_are_grouped_separately(self):
+        """複数日付が混在した場合に日付ごとに分けられる"""
+        history = FinancialAssetHistory(
+            assets=[
+                _make_asset(date(2026, 1, 10), "商品A", 600_000, 500_000, 100_000),
+                _make_asset(date(2026, 1, 10), "商品B", 400_000, 350_000, 50_000),
+                _make_asset(date(2026, 1, 9), "商品A", 590_000, 500_000, 90_000),
+                _make_asset(date(2026, 1, 9), "商品B", 390_000, 350_000, 40_000),
+            ]
+        )
+
+        result = history.asset_valuation_by_date()
+
+        assert result == {
+            date(2026, 1, 10): AssetValuation(value=1_000_000),
+            date(2026, 1, 9): AssetValuation(value=980_000),
+        }
+
+    def test_asset_valuation_by_date__empty_history_returns_empty_dict(self):
+        """空の履歴の場合は空の dict を返す"""
+        result = FinancialAssetHistory().asset_valuation_by_date()
+
+        assert result == {}
