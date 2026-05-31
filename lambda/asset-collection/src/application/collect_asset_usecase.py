@@ -1,7 +1,16 @@
+from datetime import datetime
+from pathlib import Path
+
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from .asset_fetcher_interface import IAssetFetcher
+from src.config import AssetFetchConfig
+from src.config.settings import get_logger
+
+from .asset_fetcher_interface import ExtractFailed, IAssetFetcher, LoginFailed, NavigatePageFailed
 from .collect_asset_interface import ICollectDailyAssetUseCase
+from .error_artifact_repository_interface import IErrorArtifactRepository
+
+logger = get_logger()
 
 
 class CollectAssetDailyUseCase(ICollectDailyAssetUseCase):
@@ -9,10 +18,49 @@ class CollectAssetDailyUseCase(ICollectDailyAssetUseCase):
         self,
         fetcher: IAssetFetcher,
         repository: IFinancialAssetRepository,
+        error_repo: IErrorArtifactRepository,
+        config: AssetFetchConfig,
     ) -> None:
         self.fetcher = fetcher
         self.repository = repository
+        self.error_repo = error_repo
+        self.config = config
 
     def execute(self) -> None:
-        daily_assets = self.fetcher.fetch_asset_valuation()
-        self.repository.save_daily(daily_assets)
+        try:
+            self.fetcher.open_start_page(self.config.start_url)
+
+            try:
+                self.fetcher.login(self.config)
+            except Exception as e:
+                logger.error("ログイン処理に失敗しました。", extra={"error": str(e)})
+                self._store_artifact(self.fetcher.capture_screenshot())
+                raise LoginFailed() from e
+
+            try:
+                self.fetcher.navigate_to_asset_page()
+            except Exception as e:
+                logger.error("資産評価額照会ページへの遷移に失敗しました。", extra={"error": str(e)})
+                self._store_artifact(self.fetcher.capture_screenshot())
+                raise NavigatePageFailed() from e
+
+            try:
+                daily_assets = self.fetcher.extract()
+            except Exception as e:
+                logger.error("資産情報の抽出に失敗しました。", extra={"error": str(e)})
+                self._store_artifact(self.fetcher.get_page_source())
+                raise ExtractFailed() from e
+
+            self.repository.save_daily(daily_assets)
+        finally:
+            self.fetcher.logout()
+            self.fetcher.close()
+
+    def _store_artifact(self, file_path: str) -> None:
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        ext = Path(file_path).suffix
+        key = f"errors/{timestamp}{ext}"
+        try:
+            self.error_repo.store(key=key, file_path=file_path)
+        except Exception as e:
+            logger.warning("エラーアーティファクトの保存に失敗しました。", extra={"error": str(e)})

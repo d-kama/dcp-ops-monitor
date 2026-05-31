@@ -1,7 +1,7 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.application import CollectAssetDailyUseCase, IAssetFetcher
+from src.application import CollectAssetDailyUseCase
 from src.config import AssetFetchConfig, get_logger, get_settings
 from src.infrastructure import (
     GoogleSheetFinancialAssetRepository,
@@ -21,24 +21,25 @@ def handler(event: dict, context: LambdaContext) -> str | None:
     return Main(build_usecase()).run()
 
 
-def build_usecase():
+def build_usecase() -> CollectAssetDailyUseCase:
+    config = _build_fetch_config()
     return CollectAssetDailyUseCase(
-        fetcher=_build_fetcher(),
+        fetcher=SeleniumAssetFetcher(config=config),
         repository=_build_financial_asset_repository(),
+        error_repo=S3ErrorArtifactRepository(settings.data_bucket_name),
+        config=config,
     )
 
 
-def _build_fetcher() -> IAssetFetcher:
+def _build_fetch_config() -> AssetFetchConfig:
     param = get_ssm_json_parameter(name=settings.asset_fetch_config_parameter_name, decrypt=True)
-    config = AssetFetchConfig(
+    return AssetFetchConfig(
         login_user_id=param["login_user_id"],
         login_password=param["login_password"],
         login_birthdate=param["login_birthdate"],
         start_url=param["start_url"],
         user_agent=settings.user_agent,
     )
-    error_repository = S3ErrorArtifactRepository(settings.data_bucket_name)
-    return SeleniumAssetFetcher(config=config, error_repo=error_repository)
 
 
 def _build_financial_asset_repository() -> IFinancialAssetRepository:
