@@ -34,7 +34,7 @@ class S3ErrorArtifactRepository(IErrorArtifactRepository):
             file_path: 保存するファイルのパス
 
         Raises:
-            ArtifactUploadError: S3 へのファイルアップロード失敗時
+            ErrorArtifactUploadError: S3 へのファイルアップロード失敗時
         """
         try:
             self.client.upload_file(file_path, self.bucket, key)
