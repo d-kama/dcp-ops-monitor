@@ -1,7 +1,7 @@
 from datetime import date
 from string import Template
 
-from shared.domain.financial_asset import AssetValuation, DailyAssetTotal, FinancialAssetHistory
+from shared.domain.financial_asset import AssetValuation, FinancialAssetHistory, LatestPortfolioTotal
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
 from .notifier_interface import INotifier
@@ -32,12 +32,12 @@ class NotifyWeeklySummaryUseCase(INotifyWeeklySummaryUseCase):
         message = self._format(self._summarise(history))
         self.notifier.notify([message])
 
-    def _summarise(self, history: FinancialAssetHistory) -> tuple[DailyAssetTotal, dict[date, AssetValuation]]:
+    def _summarise(self, history: FinancialAssetHistory) -> tuple[LatestPortfolioTotal, dict[date, AssetValuation]]:
         latest_day_total = history.sum_latest_day()
         valuations_by_date = history.asset_valuation_by_date()
         return latest_day_total, valuations_by_date
 
-    def _format(self, summary: tuple[DailyAssetTotal, dict[date, AssetValuation]]) -> str:
+    def _format(self, summary: tuple[LatestPortfolioTotal, dict[date, AssetValuation]]) -> str:
         latest_day_total, valuations_by_date = summary
         weekly_section = self._build_weekly_section(valuations_by_date)
         total = latest_day_total

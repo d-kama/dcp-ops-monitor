@@ -28,8 +28,8 @@ class FinancialAsset:
 
 
 @dataclass(frozen=True)
-class DailyAssetTotal:
-    """1日分の全商品合算資産（FinancialAsset から product_name を除いた DTO）"""
+class LatestPortfolioTotal:
+    """1日分の全商品合算資産を表す Value Object"""
 
     base_date: date
     cumulative_contributions: CumulativeContributions
@@ -50,14 +50,14 @@ class FinancialAssetHistory:
             totals[asset.base_date] += asset.asset_valuation.value
         return {d: AssetValuation(value=v) for d, v in totals.items()}
 
-    def sum_latest_day(self) -> DailyAssetTotal:
-        """最新日付の全商品資産を合算して DailyAssetTotal を返す"""
+    def sum_latest_day(self) -> LatestPortfolioTotal:
+        """最新日付の全商品資産を合算して LatestPortfolioTotal を返す"""
         if not self.assets:
             raise ValueError("asset is empty")
 
         latest_date = max(asset.base_date for asset in self.assets)
         latest_assets = [a for a in self.assets if a.base_date == latest_date]
-        return DailyAssetTotal(
+        return LatestPortfolioTotal(
             base_date=latest_date,
             cumulative_contributions=CumulativeContributions(
                 value=sum(a.cumulative_contributions.value for a in latest_assets)

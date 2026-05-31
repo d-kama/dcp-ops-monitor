@@ -5,10 +5,10 @@ import pytest
 from shared.domain.financial_asset import (
     AssetValuation,
     CumulativeContributions,
-    DailyAssetTotal,
     FinancialAsset,
     FinancialAssetHistory,
     GainsOrLosses,
+    LatestPortfolioTotal,
 )
 
 
@@ -59,7 +59,7 @@ class TestSumLatestDay:
 
         result = history.sum_latest_day()
 
-        assert result == DailyAssetTotal(
+        assert result == LatestPortfolioTotal(
             base_date=date(2026, 1, 10),
             cumulative_contributions=CumulativeContributions(value=900_000),
             gains_or_losses=GainsOrLosses(value=100_000),
