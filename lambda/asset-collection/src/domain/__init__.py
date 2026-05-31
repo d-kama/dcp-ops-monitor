@@ -1,5 +1,3 @@
-"""Domain レイヤー: モデル、インターフェース、例外"""
-
 from shared.domain.exceptions import AssetRecordError
 from shared.domain.financial_asset import (
     AssetValuation,

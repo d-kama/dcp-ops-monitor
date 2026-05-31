@@ -11,12 +11,9 @@ class IErrorArtifactRepository(ABC):
             key (str): オブジェクトのキー
             file_path (str): 保存するファイルのパス
         Raises:
-            ArtifactUploadError: 保存失敗時
+            ErrorArtifactUploadError: 保存失敗時
         """
-        pass
 
 
-class ArtifactUploadError(Exception):
+class ErrorArtifactUploadError(Exception):
     """エラーアーティファクトのアップロード失敗"""
-
-    pass

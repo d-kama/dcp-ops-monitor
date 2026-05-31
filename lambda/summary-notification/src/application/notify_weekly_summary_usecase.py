@@ -1,9 +1,11 @@
 from datetime import date
 from string import Template
 
-from shared.domain.financial_asset import AssetValuation
+from shared.domain.financial_asset import AssetValuation, DailyAssetTotal, FinancialAssetHistory
+from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.application.summarise_asset_usecase import AssetSummary
+from .notifier_interface import INotifier
+from .notify_weekly_summary_interface import INotifyWeeklySummaryUseCase
 
 _TEMPLATE = Template(
     "確定拠出年金 運用状況通知Bot\n"
@@ -18,10 +20,27 @@ _TEMPLATE = Template(
 _WEEKLY_HEADER = "資産評価額推移（直近1週間）\n"
 
 
-class FormatMessageUseCase:
-    def format(self, summary: AssetSummary) -> str:
-        weekly_section = self._build_weekly_section(summary.valuations_by_date)
-        total = summary.latest_day_total
+class NotifyWeeklySummaryUseCase(INotifyWeeklySummaryUseCase):
+    DAYS = 7
+
+    def __init__(self, repository: IFinancialAssetRepository, notifier: INotifier) -> None:
+        self.repository = repository
+        self.notifier = notifier
+
+    def execute(self) -> None:
+        history = self.repository.retrieve_from_with_days(self.DAYS)
+        message = self._format(self._summarise(history))
+        self.notifier.notify([message])
+
+    def _summarise(self, history: FinancialAssetHistory) -> tuple[DailyAssetTotal, dict[date, AssetValuation]]:
+        latest_day_total = history.sum_latest_day()
+        valuations_by_date = history.asset_valuation_by_date()
+        return latest_day_total, valuations_by_date
+
+    def _format(self, summary: tuple[DailyAssetTotal, dict[date, AssetValuation]]) -> str:
+        latest_day_total, valuations_by_date = summary
+        weekly_section = self._build_weekly_section(valuations_by_date)
+        total = latest_day_total
         return _TEMPLATE.substitute(
             cumulative_contributions=f"{total.cumulative_contributions.value:,}",
             gains_or_losses=f"{total.gains_or_losses.value:,}",

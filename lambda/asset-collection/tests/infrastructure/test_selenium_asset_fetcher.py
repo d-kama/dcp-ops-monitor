@@ -8,15 +8,18 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.application.error_artifact_repository import ArtifactUploadError, IErrorArtifactRepository
+from src.infrastructure.error_artifact_repository_interface import (
+    ErrorArtifactUploadError,
+    IErrorArtifactRepository,
+)
 from src.infrastructure.selenium_asset_fetcher import SeleniumAssetFetcher, SeleniumAssetFetchFailed
 
 
 class AlwaysFailArtifactRepository(IErrorArtifactRepository):
-    """store() が常に ArtifactUploadError を raise するスタブ"""
+    """store() が常に ErrorArtifactUploadError を raise するスタブ"""
 
     def store(self, key: str, file_path: str) -> None:
-        raise ArtifactUploadError("S3 upload failed (test stub)")
+        raise ErrorArtifactUploadError("S3 upload failed (test stub)")
 
 
 class AlwaysSucceedArtifactRepository(IErrorArtifactRepository):

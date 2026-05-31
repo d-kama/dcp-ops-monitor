@@ -13,10 +13,11 @@ from shared.domain.financial_asset import (
 )
 
 from src.application import AssetFetchFailed, IAssetFetcher
-from src.application.error_artifact_repository import IErrorArtifactRepository
 from src.config import AssetFetchConfig
 from src.config.settings import get_logger
 from src.infrastructure.yen_parser import parse_yen_amount
+
+from .error_artifact_repository_interface import IErrorArtifactRepository
 
 logger = get_logger()
 
