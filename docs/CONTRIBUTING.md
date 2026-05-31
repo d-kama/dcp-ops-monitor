@@ -101,6 +101,15 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 
 ## asset-collection
 
+### スクレイピングの層責務
+
+| 層 | 責務 |
+|---|---|
+| Application（`CollectAssetDailyUseCase`） | ステップの呼び出し順制御・エラーアーティファクトの取得と保存・ステップ固有例外への変換・ログアウトとドライバーのクリーンアップ（finally） |
+| Infrastructure（`SeleniumAssetFetcher`） | Selenium 操作のみ。失敗時は生の例外を raise する。アーティファクト取得用メソッド（`capture_screenshot` / `get_page_source`）を公開するが、保存は行わない |
+
+`IErrorArtifactRepository` は Application 層（`application/error_artifact_repository_interface.py`）に置く。S3 実装はこれを implement する Infrastructure クラスとして残す。
+
 ### なぜ Docker コンテナを使うか
 
 Selenium を Lambda の zip パッケージ方式でデプロイする場合、Chrome / ChromeDriver のバイナリと Python パッケージの依存関係の調整が煩雑になります。コンテナイメージ方式にすることでこの問題を回避しています。

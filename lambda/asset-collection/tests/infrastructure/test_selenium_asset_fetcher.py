@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.infrastructure.error_artifact_repository_interface import (
+from src.application.error_artifact_repository_interface import (
     ErrorArtifactUploadError,
     IErrorArtifactRepository,
 )

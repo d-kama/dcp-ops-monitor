@@ -2,9 +2,8 @@ import os
 
 import boto3
 
+from src.application.error_artifact_repository_interface import ErrorArtifactUploadError, IErrorArtifactRepository
 from src.config.settings import get_logger
-
-from .error_artifact_repository_interface import ErrorArtifactUploadError, IErrorArtifactRepository
 
 logger = get_logger()
 
