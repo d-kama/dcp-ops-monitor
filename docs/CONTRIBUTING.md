@@ -77,7 +77,7 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 
 - Domain 層に外部依存を持ち込まないことで、ビジネスルールを独立してテスト・変更できる
 - Infrastructure 実装を差し替え可能にすることで、ローカルテスト（Mock / LocalStack）が容易になる
-- Presentation 層に依存性注入を集約することで、各層の責務を明確に分離できる
+- `handler.py`（Composition Root）に依存性注入を集約することで、各層の責務を明確に分離できる
 
 ### なぜ shared パッケージがあるか
 
@@ -89,12 +89,13 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 
 | モジュール | 内容 |
 |---|---|
-| `domain/asset_evaluation.py` | `AssetEvaluation` ドメインモデル（両 Lambda で同じ資産データを扱うため） |
-| `domain/asset_record.py` | `AssetRecord` ドメインモデル（Google Spreadsheet への蓄積フォーマット） |
+| `domain/financial_asset.py` | `FinancialAsset` / `FinancialAssetHistory` / `AssetValuation` 等のドメインモデル |
+| `domain/financial_asset_repository.py` | `IFinancialAssetRepository`（読み書き両用の基底 IF） |
+| `domain/exceptions.py` | `AssetRecordError` 基底例外 |
 | `infrastructure/ssm_parameter.py` | SSM Parameter Store クライアント |
 | `config/base_settings.py` | Logger・BaseSettings（aws-lambda-powertools ベース） |
 
-リポジトリ IF は各 Lambda の `domain/` 層が個別に定義する（ISP: Interface Segregation Principle）。`asset-collection` は write 専用の `IAssetRecordWriter`、`summary-notification` は read 専用の `IAssetRecordReader` を持ち、互いの IF に依存しない。
+リポジトリ IF は `shared` パッケージの `IFinancialAssetRepository` を両 Lambda で共有する。write 系メソッド（`save_daily`）は `summary-notification` 側で `NotImplementedError` を raise し、実質 Lambda ごとに read / write を使い分けている。
 
 ---
 

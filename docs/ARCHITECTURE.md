@@ -19,7 +19,7 @@ DCP Ops Monitor は、確定拠出年金（Defined Contribution Plan）の運用
 
 ```text
 lambda/
-├── shared/          # 共通パッケージ（AssetEvaluation、AssetRecord、SSM クライアント）
+├── shared/          # 共通パッケージ（FinancialAsset ドメインモデル、SSM クライアント）
 ├── asset-collection/    # 資産情報収集 Lambda（平日 09:00 JST 実行）
 └── summary-notification/  # サマリ通知 Lambda（日曜 09:00 JST 実行）
 ```
