@@ -10,7 +10,7 @@ paths:
 ### 一般原則
 
 - Python 3.13 を使用
-- Pydantic でデータモデルを定義
+- データモデルの定義: Domain 層は `@dataclass(frozen=True)`、config / infrastructure 層は Pydantic を使用
 - 型ヒントを必須とする
 - docstring は関数・クラスの目的が明確な場合は省略可
 
