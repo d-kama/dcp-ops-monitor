@@ -13,10 +13,7 @@ class IErrorArtifactRepository(ABC):
         Raises:
             ArtifactUploadError: 保存失敗時
         """
-        pass
 
 
-class ArtifactUploadError(Exception):
+class ErrorArtifactUploadError(Exception):
     """エラーアーティファクトのアップロード失敗"""
-
-    pass
