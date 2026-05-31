@@ -1,5 +1,3 @@
-"""Google Spreadsheet 金融資産リポジトリ読み取り実装（summary-notification 用）"""
-
 from datetime import date, timedelta
 
 import gspread

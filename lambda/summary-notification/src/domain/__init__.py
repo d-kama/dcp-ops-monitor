@@ -1,5 +1,3 @@
-"""Domain レイヤー: 例外"""
-
 from .exceptions import (
     AssetRetrievalFailed,
     SummaryNotificationFailed,
