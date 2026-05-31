@@ -4,7 +4,7 @@ from string import Template
 from shared.domain.financial_asset import AssetValuation, DailyAssetTotal, FinancialAssetHistory
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from .notifier import INotifier
+from .notifier_interface import INotifier
 from .notify_weekly_summary_interface import INotifyWeeklySummaryUseCase
 
 _TEMPLATE = Template(

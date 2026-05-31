@@ -10,7 +10,7 @@ from shared.domain.financial_asset import (
 )
 
 from src.application import INotifyWeeklySummaryUseCase, NotifyWeeklySummaryUseCase
-from src.application.notifier import INotifier, NotificationFailed
+from src.application.notifier_interface import INotifier, NotificationFailed
 from src.domain import AssetRetrievalFailed
 from tests.fixtures.mocks import MockFinancialAssetRepository, MockNotifier
 
