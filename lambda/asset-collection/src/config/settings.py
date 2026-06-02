@@ -26,4 +26,4 @@ def get_settings() -> EnvSettings:
     Returns:
         EnvSettings: 環境変数の設定
     """
-    return EnvSettings()
+    return EnvSettings()  # ty: ignore[missing-argument] # pyright: ignore[reportCallIssue]
