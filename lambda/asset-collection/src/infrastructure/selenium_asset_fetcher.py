@@ -5,16 +5,10 @@ from zoneinfo import ZoneInfo
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from shared.domain.financial_asset import (
-    AssetValuation,
-    CumulativeContributions,
-    FinancialAsset,
-    FinancialAssetHistory,
-    GainsOrLosses,
-)
 
 from src.application import IAssetFetcher
 from src.config import AssetFetchConfig, get_logger
+from src.domain import AssetValuation, CumulativeContributions, FinancialAsset, FinancialAssetHistory, GainsOrLosses
 from src.infrastructure.yen_parser import parse_yen_amount
 
 logger = get_logger()
