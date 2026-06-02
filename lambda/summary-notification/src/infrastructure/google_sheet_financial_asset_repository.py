@@ -12,7 +12,7 @@ from shared.domain.financial_asset import (
 )
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.config.settings import get_logger
+from src.config import get_logger
 from src.domain import AssetRetrievalFailed
 
 logger = get_logger()
