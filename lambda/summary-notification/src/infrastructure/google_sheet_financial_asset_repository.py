@@ -12,7 +12,7 @@ from shared.domain.financial_asset import (
 )
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.config.settings import get_logger
+from src.config import get_logger
 from src.domain import AssetRetrievalFailed
 
 logger = get_logger()
@@ -31,7 +31,7 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
         spreadsheet = client.open_by_key(spreadsheet_id)
         self.worksheet = spreadsheet.worksheet(sheet_name)
 
-    def save_daily(self, history: FinancialAssetHistory) -> None:
+    def save_daily(self, daily_assets: FinancialAssetHistory) -> None:
         raise NotImplementedError("summary-notification は書き込みをサポートしません")
 
     # TODO: Repository内の最新日付からN日以内のデータを取得するようになっている。

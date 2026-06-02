@@ -1,4 +1,6 @@
-from shared.config.base_settings import BaseEnvSettings, get_logger  # noqa: F401
+from functools import lru_cache
+
+from shared.config.base_settings import BaseEnvSettings
 
 
 class EnvSettings(BaseEnvSettings):
@@ -17,15 +19,11 @@ class EnvSettings(BaseEnvSettings):
     data_bucket_name: str
 
 
-def get_settings(settings_instance: EnvSettings | None = None) -> EnvSettings:
-    """設定インスタンスを取得する
-
-    Args:
-        settings_instance (EnvSettings | None, optional): 設定インスタンス. Defaults to None.
+@lru_cache()
+def get_settings() -> EnvSettings:
+    """環境変数の設定を取得する関数
 
     Returns:
-        EnvSettings: 設定インスタンス
+        EnvSettings: 環境変数の設定
     """
-    if settings_instance is None:
-        settings_instance = EnvSettings()
-    return settings_instance
+    return EnvSettings()  # ty: ignore[missing-argument] # pyright: ignore[reportCallIssue]

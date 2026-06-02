@@ -7,7 +7,7 @@ class IFinancialAssetRepository(ABC):
     """金融資産リポジトリ"""
 
     @abstractmethod
-    def save_daily(self, history: FinancialAssetHistory) -> None:
+    def save_daily(self, daily_assets: FinancialAssetHistory) -> None:
         """1日分の金融資産履歴を保存する
 
         冪等性を保証する。同一日付のレコードが既に存在する場合は

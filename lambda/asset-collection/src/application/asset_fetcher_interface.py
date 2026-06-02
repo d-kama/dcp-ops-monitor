@@ -21,7 +21,8 @@ class IAssetFetcher(ABC):
     def extract(self) -> FinancialAssetHistory: ...
 
     @abstractmethod
-    def logout(self) -> None: ...
+    def logout(self) -> None:
+        """logout 失敗時は例外を投げず、ログアウトできなかったことをログに記録する"""
 
     @abstractmethod
     def close(self) -> None: ...

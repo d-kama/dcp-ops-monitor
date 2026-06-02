@@ -1,9 +1,10 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from gspread.utils import ValueInputOption
 from shared.domain.financial_asset import FinancialAssetHistory
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.config.settings import get_logger
+from src.config import get_logger
 from src.domain import AssetRecordError
 
 logger = get_logger()
@@ -69,4 +70,4 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
             ]
             for asset in daily_assets.assets
         ]
-        self.worksheet.append_rows(rows, value_input_option="RAW")
+        self.worksheet.append_rows(rows, value_input_option=ValueInputOption.raw)

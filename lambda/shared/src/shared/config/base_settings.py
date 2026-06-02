@@ -1,19 +1,13 @@
+from functools import lru_cache
+
 from aws_lambda_powertools import Logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-def get_logger(logger: Logger | None = None) -> Logger:
-    """Logger のインスタンスを取得する
-
-    Args:
-        logger (Logger | None, optional): Logger のインスタンス. Defaults to None.
-
-    Returns:
-        Logger: Logger のインスタンス
-    """
-    if logger is None:
-        logger = Logger()
-    return logger
+@lru_cache()
+def get_logger() -> Logger:
+    """Loggerのインスタンスをキャッシュして返す関数"""
+    return Logger()
 
 
 class BaseEnvSettings(BaseSettings):

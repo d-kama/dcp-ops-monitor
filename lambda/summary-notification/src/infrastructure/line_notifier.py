@@ -3,7 +3,7 @@ import json
 import requests
 
 from src.application import INotifier, NotificationFailed
-from src.config.settings import get_logger
+from src.config import get_logger
 
 logger = get_logger()
 
