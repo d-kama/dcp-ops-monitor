@@ -51,4 +51,4 @@ def test_domain_all_contains_expected_symbols() -> None:
         "SummaryNotificationFailed",
     }
 
-    assert expected.issubset(set(domain_module.__all__))
+    assert set(domain_module.__all__) == expected
