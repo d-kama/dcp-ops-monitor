@@ -2,25 +2,46 @@ from abc import ABC, abstractmethod
 
 from shared.domain.financial_asset import FinancialAssetHistory
 
-
-class AssetFetchFailed(Exception):
-    pass
+from src.config import AssetFetchConfig
 
 
 class IAssetFetcher(ABC):
     """スクレイピングドライバー抽象クラス"""
 
     @abstractmethod
-    def fetch_asset_valuation(self) -> FinancialAssetHistory:
-        """資産評価情報を取得するメソッド
+    def open_start_page(self, url: str) -> None: ...
 
-        ページ遷移（ログイン → 資産評価ページ → ログアウト）と
-        要素抽出を一括で行う。
+    @abstractmethod
+    def login(self, config: AssetFetchConfig) -> None: ...
 
-        Returns:
-            FinancialAssetHistory: 商品別の資産評価情報
+    @abstractmethod
+    def navigate_to_asset_page(self) -> None: ...
 
-        Raises:
-            AssetFetchFailed: スクレイピングまたは資産情報抽出に失敗した場合
-        """
-        pass
+    @abstractmethod
+    def extract(self) -> FinancialAssetHistory: ...
+
+    @abstractmethod
+    def logout(self) -> None: ...
+
+    @abstractmethod
+    def close(self) -> None: ...
+
+    @abstractmethod
+    def capture_screenshot(self) -> str:
+        """/tmp/ に保存したスクリーンショットのファイルパスを返す"""
+
+    @abstractmethod
+    def get_page_source(self) -> str:
+        """/tmp/ に保存したページソース（HTML）のファイルパスを返す"""
+
+
+class LoginFailed(Exception):
+    pass
+
+
+class NavigatePageFailed(Exception):
+    pass
+
+
+class ExtractFailed(Exception):
+    pass

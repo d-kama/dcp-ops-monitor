@@ -1,8 +1,9 @@
 from datetime import date
+from unittest.mock import MagicMock
 
 import pytest
 
-from src.application import AssetFetchFailed, CollectAssetDailyUseCase
+from src.application import CollectAssetDailyUseCase, ExtractFailed, LoginFailed, NavigatePageFailed
 from src.domain import (
     AssetValuation,
     CumulativeContributions,
@@ -43,64 +44,122 @@ def valid_history() -> FinancialAssetHistory:
     )
 
 
-def test_execute__all_mocks_succeed__saves_assets(valid_history):
-    """ユースケースのE2Eテスト（Mockを使用）
+def make_usecase(fetcher, repo=None, error_repo=None, config=None):
+    """テスト用 UseCase を生成するヘルパー"""
+    from tests.fixtures.mocks import MockErrorArtifactRepository, MockFinancialAssetRepository
 
-    エンドツーエンドで処理が正常に完了することを確認する
-    """
-    # given
+    if repo is None:
+        repo = MockFinancialAssetRepository()
+    if error_repo is None:
+        error_repo = MockErrorArtifactRepository()
+    if config is None:
+        config = MagicMock()
+        config.start_url = "http://example.com"
+
+    return CollectAssetDailyUseCase(
+        fetcher=fetcher,
+        repository=repo,
+        error_repo=error_repo,
+        config=config,
+    )
+
+
+def test_execute__all_steps_succeed__saves_assets(valid_history):
+    """全ステップ成功時に save_daily が呼ばれる"""
     from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
 
     fetcher = MockSeleniumAssetFetcher(mock_history=valid_history)
     repo = MockFinancialAssetRepository()
-    usecase = CollectAssetDailyUseCase(fetcher=fetcher, repository=repo)
+    usecase = make_usecase(fetcher=fetcher, repo=repo)
 
-    # when
     usecase.execute()
 
-    # then
-    assert fetcher.fetch_called is True
     assert repo.saved_daily_assets is not None
     assert len(repo.saved_daily_assets.assets) == 3
     product_names = {a.product_name for a in repo.saved_daily_assets.assets}
     assert product_names == {"プロダクト_1", "プロダクト_2", "プロダクト_3"}
 
 
-def test_execute__scraping_fails__raises_asset_fetch_failed(valid_history):
-    """スクレイピングエラー時のE2Eテスト
+def test_execute__login_fails__stores_screenshot_and_raises():
+    """login 失敗時にスクリーンショット保存 + LoginFailed を raise する"""
+    from tests.fixtures.mocks import MockErrorArtifactRepository, MockSeleniumAssetFetcher
 
-    スクレイピングが失敗した場合、AssetFetchFailed 例外が伝播することを確認する
-    """
-    # given
-    from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
+    fetcher = MockSeleniumAssetFetcher(fail_at="login")
+    error_repo = MockErrorArtifactRepository()
+    usecase = make_usecase(fetcher=fetcher, error_repo=error_repo)
 
-    fetcher = MockSeleniumAssetFetcher(should_fail=True)
-    repo = MockFinancialAssetRepository()
-    usecase = CollectAssetDailyUseCase(fetcher=fetcher, repository=repo)
-
-    # when, then
-    with pytest.raises(AssetFetchFailed):
+    with pytest.raises(LoginFailed):
         usecase.execute()
 
-    assert fetcher.fetch_called is True
-    assert repo.saved_daily_assets is None
+    assert len(error_repo.stored_keys) == 1
+    assert error_repo.stored_keys[0].endswith(".png")
 
 
-def test_execute__extraction_fails__raises_asset_fetch_failed(valid_history):
-    """抽出エラー時のE2Eテスト
+def test_execute__login_fails__calls_logout_and_close():
+    """login 失敗時でも finally で logout / close が呼ばれる"""
+    from tests.fixtures.mocks import MockSeleniumAssetFetcher
 
-    資産情報の抽出に失敗した場合、AssetFetchFailed 例外が伝播することを確認する
-    """
-    # given
-    from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
+    fetcher = MockSeleniumAssetFetcher(fail_at="login")
+    usecase = make_usecase(fetcher=fetcher)
 
-    fetcher = MockSeleniumAssetFetcher(should_fail_extraction=True)
-    repo = MockFinancialAssetRepository()
-    usecase = CollectAssetDailyUseCase(fetcher=fetcher, repository=repo)
-
-    # when, then
-    with pytest.raises(AssetFetchFailed):
+    with pytest.raises(LoginFailed):
         usecase.execute()
 
-    assert fetcher.fetch_called is True
-    assert repo.saved_daily_assets is None
+    assert fetcher.logout_called
+    assert fetcher.close_called
+
+
+def test_execute__navigate_fails__stores_screenshot_and_raises():
+    """navigate 失敗時にスクリーンショット保存 + NavigatePageFailed を raise する"""
+    from tests.fixtures.mocks import MockErrorArtifactRepository, MockSeleniumAssetFetcher
+
+    fetcher = MockSeleniumAssetFetcher(fail_at="navigate")
+    error_repo = MockErrorArtifactRepository()
+    usecase = make_usecase(fetcher=fetcher, error_repo=error_repo)
+
+    with pytest.raises(NavigatePageFailed):
+        usecase.execute()
+
+    assert len(error_repo.stored_keys) == 1
+    assert error_repo.stored_keys[0].endswith(".png")
+
+
+def test_execute__extract_fails__stores_page_source_and_raises():
+    """extract 失敗時にページソース保存 + ExtractFailed を raise する"""
+    from tests.fixtures.mocks import MockErrorArtifactRepository, MockSeleniumAssetFetcher
+
+    fetcher = MockSeleniumAssetFetcher(fail_at="extract")
+    error_repo = MockErrorArtifactRepository()
+    usecase = make_usecase(fetcher=fetcher, error_repo=error_repo)
+
+    with pytest.raises(ExtractFailed):
+        usecase.execute()
+
+    assert len(error_repo.stored_keys) == 1
+    assert error_repo.stored_keys[0].endswith(".html")
+
+
+def test_execute__artifact_store_fails__does_not_raise_artifact_error():
+    """エラーアーティファクト保存失敗時は警告ログのみで例外を握りつぶす"""
+    from tests.fixtures.mocks import MockErrorArtifactRepository, MockSeleniumAssetFetcher
+
+    fetcher = MockSeleniumAssetFetcher(fail_at="login")
+    error_repo = MockErrorArtifactRepository(should_fail=True)
+    usecase = make_usecase(fetcher=fetcher, error_repo=error_repo)
+
+    # LoginFailed は raise されるが ErrorArtifactUploadError は伝播しない
+    with pytest.raises(LoginFailed):
+        usecase.execute()
+
+
+def test_execute__success__calls_logout_and_close(valid_history):
+    """成功時も finally で logout / close が呼ばれる"""
+    from tests.fixtures.mocks import MockSeleniumAssetFetcher
+
+    fetcher = MockSeleniumAssetFetcher(mock_history=valid_history)
+    usecase = make_usecase(fetcher=fetcher)
+
+    usecase.execute()
+
+    assert fetcher.logout_called
+    assert fetcher.close_called
