@@ -4,15 +4,15 @@ from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest
-from shared.domain.financial_asset import (
+
+from src.domain import (
+    AssetRetrievalFailed,
     AssetValuation,
     CumulativeContributions,
     FinancialAsset,
     FinancialAssetHistory,
     GainsOrLosses,
 )
-
-from src.domain import AssetRetrievalFailed
 from src.infrastructure import GoogleSheetFinancialAssetRepository
 
 SPREADSHEET_ID = "test-spreadsheet-id"

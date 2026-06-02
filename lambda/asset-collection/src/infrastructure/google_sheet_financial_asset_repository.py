@@ -1,11 +1,9 @@
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread.utils import ValueInputOption
-from shared.domain.financial_asset import FinancialAssetHistory
-from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
 from src.config import get_logger
-from src.domain import AssetRecordError
+from src.domain import AssetRecordError, FinancialAssetHistory, IFinancialAssetRepository
 
 logger = get_logger()
 

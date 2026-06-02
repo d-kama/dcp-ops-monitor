@@ -3,17 +3,17 @@ from datetime import date, timedelta
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread.utils import rowcol_to_a1
-from shared.domain.financial_asset import (
+
+from src.config import get_logger
+from src.domain import (
+    AssetRetrievalFailed,
     AssetValuation,
     CumulativeContributions,
     FinancialAsset,
     FinancialAssetHistory,
     GainsOrLosses,
+    IFinancialAssetRepository,
 )
-from shared.domain.financial_asset_repository import IFinancialAssetRepository
-
-from src.config import get_logger
-from src.domain import AssetRetrievalFailed
 
 logger = get_logger()
 

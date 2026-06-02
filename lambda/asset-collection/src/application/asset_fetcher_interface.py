@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
-from shared.domain.financial_asset import FinancialAssetHistory
-
 from src.config import AssetFetchConfig
+from src.domain import FinancialAssetHistory
 
 
 class IAssetFetcher(ABC):
