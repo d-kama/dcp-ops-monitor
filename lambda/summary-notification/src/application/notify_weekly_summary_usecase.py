@@ -1,8 +1,7 @@
 from datetime import date
 from string import Template
 
-from shared.domain.financial_asset import AssetValuation, FinancialAssetHistory, LatestPortfolioTotal
-from shared.domain.financial_asset_repository import IFinancialAssetRepository
+from src.domain import AssetValuation, FinancialAssetHistory, IFinancialAssetRepository, LatestPortfolioTotal
 
 from .notifier_interface import INotifier
 from .notify_weekly_summary_interface import INotifyWeeklySummaryUseCase

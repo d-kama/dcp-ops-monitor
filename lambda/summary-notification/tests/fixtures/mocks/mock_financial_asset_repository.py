@@ -1,7 +1,4 @@
-from shared.domain.financial_asset import FinancialAssetHistory
-from shared.domain.financial_asset_repository import IFinancialAssetRepository
-
-from src.domain import AssetRetrievalFailed
+from src.domain import AssetRetrievalFailed, FinancialAssetHistory, IFinancialAssetRepository
 
 
 class MockFinancialAssetRepository(IFinancialAssetRepository):

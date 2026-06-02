@@ -1,8 +1,8 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
 from src.application import INotifier, INotifyWeeklySummaryUseCase, NotifyWeeklySummaryUseCase
 from src.config import EnvSettings, get_logger, get_settings
+from src.domain import IFinancialAssetRepository
 from src.infrastructure import (
     GoogleSheetFinancialAssetRepository,
     LineNotifier,
