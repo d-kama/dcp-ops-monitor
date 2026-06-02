@@ -13,4 +13,4 @@ class EnvSettings(BaseEnvSettings):
 
 @lru_cache()
 def get_settings() -> EnvSettings:
-    return EnvSettings()  # type: ignore[call-arg]
+    return EnvSettings()
