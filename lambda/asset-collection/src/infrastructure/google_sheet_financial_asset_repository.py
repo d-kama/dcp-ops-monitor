@@ -3,7 +3,7 @@ from google.oauth2.service_account import Credentials
 from shared.domain.financial_asset import FinancialAssetHistory
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.config.settings import get_logger
+from src.config import get_logger
 from src.domain import AssetRecordError
 
 logger = get_logger()

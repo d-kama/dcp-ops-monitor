@@ -14,8 +14,7 @@ from shared.domain.financial_asset import (
 )
 
 from src.application import IAssetFetcher
-from src.config import AssetFetchConfig
-from src.config.settings import get_logger
+from src.config import AssetFetchConfig, get_logger
 from src.infrastructure.yen_parser import parse_yen_amount
 
 logger = get_logger()

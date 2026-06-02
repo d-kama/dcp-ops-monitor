@@ -3,8 +3,7 @@ from pathlib import Path
 
 from shared.domain.financial_asset_repository import IFinancialAssetRepository
 
-from src.config import AssetFetchConfig
-from src.config.settings import get_logger
+from src.config import AssetFetchConfig, get_logger
 
 from .asset_fetcher_interface import ExtractFailed, IAssetFetcher, LoginFailed, NavigatePageFailed
 from .collect_asset_interface import ICollectDailyAssetUseCase
