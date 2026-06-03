@@ -1,6 +1,7 @@
 ---
 name: implement
 description: 計画フェーズで作成された task-list.md に基づき、TDD で実装 → レビュー → 修正のフィードバックループを回しつつ実装を進める。implementer / reviewer サブエージェントを協調させてタスク単位で完了させる。新機能追加・バグ修正等のコード実装を行う段階で使用する。/plan で計画を立て終わったあとに使用する。
+disable-model-invocation: true
 ---
 
 # /implement

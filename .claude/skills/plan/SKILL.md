@@ -1,6 +1,7 @@
 ---
 name: plan
 description: 開発要求に対する計画フェーズ（影響分析 → ステアリングディレクトリ作成 → requirements.md → design.md → task-list.md）を実行する。実装は行わず、タスクリスト作成までで完了する。新機能追加・バグ修正・リファクタリング等、コード変更を伴う作業を始める前に使用する。
+disable-model-invocation: true
 ---
 
 # /plan
