@@ -1,3 +1,4 @@
+from shared.domain.exceptions import AssetRetrievalError
 from shared.domain.financial_asset import (
     AssetValuation,
     CumulativeContributions,
@@ -7,11 +8,6 @@ from shared.domain.financial_asset import (
     LatestPortfolioTotal,
 )
 from shared.domain.financial_asset_repository_interface import IFinancialAssetRepository
-
-from .exceptions import (
-    AssetRetrievalError,
-    SummaryNotificationError,
-)
 
 __all__ = [
     # Models
@@ -25,5 +21,4 @@ __all__ = [
     "IFinancialAssetRepository",
     # Exceptions
     "AssetRetrievalError",
-    "SummaryNotificationError",
 ]

@@ -21,5 +21,5 @@ class MockFinancialAssetRepository(IFinancialAssetRepository):
         self.retrieve_called = True
         self.last_days_arg = days
         if self.should_fail:
-            raise AssetRetrievalError.during_fetching()
+            raise AssetRetrievalError("資産情報の取得中にエラーが発生しました")
         return self.history

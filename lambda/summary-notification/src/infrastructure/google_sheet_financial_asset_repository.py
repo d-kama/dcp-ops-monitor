@@ -60,7 +60,7 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
         except (AssetRetrievalError, ValueError):
             raise
         except Exception as e:
-            raise AssetRetrievalError.during_fetching() from e
+            raise AssetRetrievalError("資産情報の取得中にエラーが発生しました") from e
 
     def _batch_get_assets(self, headers: list[str], target_rows: list[int]) -> FinancialAssetHistory:
         if not target_rows:
