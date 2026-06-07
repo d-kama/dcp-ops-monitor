@@ -62,7 +62,7 @@ Presentation → Application → Domain ← Infrastructure
 失敗は早期に検知し、ERROR ログを出力する。握りつぶさない。
 
 - スクレイピング失敗時: スクリーンショット/HTML を S3 の `errors/` に保存してから ERROR ログ出力
-- 通知失敗時: ERROR ログ出力 + Lambda リトライ（`NotificationFailed` 例外を raise）
+- 通知失敗時: ERROR ログ出力 + Lambda リトライ（`NotificationError` 例外を raise）
 
 ### 監視
 
