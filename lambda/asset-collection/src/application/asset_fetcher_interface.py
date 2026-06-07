@@ -35,13 +35,13 @@ class IAssetFetcher(ABC):
         """/tmp/ に保存したページソース（HTML）のファイルパスを返す"""
 
 
-class LoginFailed(Exception):
+class LoginError(Exception):
     pass
 
 
-class NavigatePageFailed(Exception):
+class NavigatePageError(Exception):
     pass
 
 
-class ExtractFailed(Exception):
+class ExtractError(Exception):
     pass

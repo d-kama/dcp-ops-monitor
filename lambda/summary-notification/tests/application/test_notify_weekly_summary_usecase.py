@@ -3,9 +3,9 @@ from datetime import date
 import pytest
 
 from src.application import INotifyWeeklySummaryUseCase, NotifyWeeklySummaryUseCase
-from src.application.notifier_interface import INotifier, NotificationFailed
+from src.application.notifier_interface import INotifier, NotificationError
 from src.domain import (
-    AssetRetrievalFailed,
+    AssetRetrievalError,
     AssetValuation,
     CumulativeContributions,
     FinancialAsset,
@@ -146,27 +146,27 @@ class TestNotifyWeeklySummaryUseCase:
         with pytest.raises(ValueError):
             usecase.execute()
 
-    def test_execute__repository_failure_raises_asset_retrieval_failed(self):
-        """リポジトリ失敗時は AssetRetrievalFailed を伝播させる"""
+    def test_execute__repository_failure_raises_asset_retrieval_error(self):
+        """リポジトリ失敗時は AssetRetrievalError を伝播させる"""
         repository = MockFinancialAssetRepository(should_fail=True)
         notifier = MockNotifier()
         usecase = NotifyWeeklySummaryUseCase(repository=repository, notifier=notifier)
 
-        with pytest.raises(AssetRetrievalFailed):
+        with pytest.raises(AssetRetrievalError):
             usecase.execute()
 
     def test_execute__notification_failure_propagates(self, sample_history: FinancialAssetHistory):
-        """notifier が NotificationFailed を送出した場合は伝播する"""
+        """notifier が NotificationError を送出した場合は伝播する"""
 
         class FailingNotifier(INotifier):
             def notify(self, messages: list[str]) -> None:
-                raise NotificationFailed.during_request()
+                raise NotificationError.during_request()
 
         repository = MockFinancialAssetRepository(history=sample_history)
         notifier = FailingNotifier()
         usecase = NotifyWeeklySummaryUseCase(repository=repository, notifier=notifier)
 
-        with pytest.raises(NotificationFailed):
+        with pytest.raises(NotificationError):
             usecase.execute()
 
     def test_execute__output_matches_expected_exactly(self, exact_match_history: FinancialAssetHistory):

@@ -1,4 +1,4 @@
-from src.domain import AssetRetrievalFailed, FinancialAssetHistory, IFinancialAssetRepository
+from src.domain import AssetRetrievalError, FinancialAssetHistory, IFinancialAssetRepository
 
 
 class MockFinancialAssetRepository(IFinancialAssetRepository):
@@ -21,5 +21,5 @@ class MockFinancialAssetRepository(IFinancialAssetRepository):
         self.retrieve_called = True
         self.last_days_arg = days
         if self.should_fail:
-            raise AssetRetrievalFailed.during_fetching()
+            raise AssetRetrievalError.during_fetching()
         return self.history

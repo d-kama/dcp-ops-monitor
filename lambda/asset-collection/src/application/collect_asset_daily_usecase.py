@@ -4,14 +4,14 @@ from pathlib import Path
 from src.config import AssetFetchConfig, get_logger
 from src.domain import IFinancialAssetRepository
 
-from .asset_fetcher_interface import ExtractFailed, IAssetFetcher, LoginFailed, NavigatePageFailed
-from .collect_asset_interface import ICollectDailyAssetUseCase
+from .asset_fetcher_interface import ExtractError, IAssetFetcher, LoginError, NavigatePageError
+from .collect_asset_daily_interface import ICollectAssetDailyUseCase
 from .error_artifact_repository_interface import IErrorArtifactRepository
 
 logger = get_logger()
 
 
-class CollectAssetDailyUseCase(ICollectDailyAssetUseCase):
+class CollectAssetDailyUseCase(ICollectAssetDailyUseCase):
     def __init__(
         self,
         fetcher: IAssetFetcher,
@@ -33,21 +33,21 @@ class CollectAssetDailyUseCase(ICollectDailyAssetUseCase):
             except Exception as e:
                 logger.error("ログイン処理に失敗しました。", extra={"error": str(e)})
                 self._store_artifact(self.fetcher.capture_screenshot())
-                raise LoginFailed() from e
+                raise LoginError() from e
 
             try:
                 self.fetcher.navigate_to_asset_page()
             except Exception as e:
                 logger.error("資産評価額照会ページへの遷移に失敗しました。", extra={"error": str(e)})
                 self._store_artifact(self.fetcher.capture_screenshot())
-                raise NavigatePageFailed() from e
+                raise NavigatePageError() from e
 
             try:
                 daily_assets = self.fetcher.extract()
             except Exception as e:
                 logger.error("資産情報の抽出に失敗しました。", extra={"error": str(e)})
                 self._store_artifact(self.fetcher.get_page_source())
-                raise ExtractFailed() from e
+                raise ExtractError() from e
 
             self.repository.save_daily(daily_assets)
         finally:

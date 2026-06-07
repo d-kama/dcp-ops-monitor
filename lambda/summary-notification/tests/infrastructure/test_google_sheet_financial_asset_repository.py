@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from src.domain import (
-    AssetRetrievalFailed,
+    AssetRetrievalError,
     AssetValuation,
     CumulativeContributions,
     FinancialAsset,
@@ -98,13 +98,13 @@ class TestRetrieveFromWithDays:
         with pytest.raises(ValueError, match="days must be positive"):
             repository.retrieve_from_with_days(days=-1)
 
-    def test_retrieve_from_with_days__gspread_error_raises_asset_retrieval_failed(self, repository, mock_worksheet):
-        """gspread 例外発生時は AssetRetrievalFailed を送出する"""
+    def test_retrieve_from_with_days__gspread_error_raises_asset_retrieval_error(self, repository, mock_worksheet):
+        """gspread 例外発生時は AssetRetrievalError を送出する"""
         import gspread
 
         mock_worksheet.row_values.side_effect = gspread.exceptions.GSpreadException("API error")
 
-        with pytest.raises(AssetRetrievalFailed):
+        with pytest.raises(AssetRetrievalError):
             repository.retrieve_from_with_days(days=7)
 
     def test_retrieve_from_with_days__multiple_products_per_date(self, repository, mock_worksheet):

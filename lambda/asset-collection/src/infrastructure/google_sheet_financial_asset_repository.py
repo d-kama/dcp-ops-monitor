@@ -3,7 +3,7 @@ from google.oauth2.service_account import Credentials
 from gspread.utils import ValueInputOption
 
 from src.config import get_logger
-from src.domain import AssetRecordError, FinancialAssetHistory, IFinancialAssetRepository
+from src.domain import AssetSaveError, FinancialAssetHistory, IFinancialAssetRepository
 
 logger = get_logger()
 
@@ -23,24 +23,25 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
         """1日分の金融資産履歴をスプレッドシートに保存する
 
         Raises:
-            AssetRecordError: レコード保存失敗時
+            AssetSaveError: 保存失敗時
         """
         if not daily_assets.assets:
             return
 
         try:
+            # TODO: 複数日付チェックは FinancialAssetHistory のメソッドに移動する
             base_dates = {asset.base_date for asset in daily_assets.assets}
             if len(base_dates) > 1:
-                raise AssetRecordError(f"save_daily に複数日付の資産が含まれています: {base_dates}")
+                raise AssetSaveError(f"save_daily に複数日付の資産が含まれています: {base_dates}")
 
             target_date = str(daily_assets.assets[0].base_date)
             self._delete_existing_rows(target_date)
             self._append_assets(daily_assets)
             logger.info("金融資産履歴を保存しました", extra={"date": target_date, "count": len(daily_assets.assets)})
-        except AssetRecordError:
+        except AssetSaveError:
             raise
         except Exception as e:
-            raise AssetRecordError(f"金融資産履歴の保存に失敗しました: {e}") from e
+            raise AssetSaveError(f"金融資産履歴の保存に失敗しました: {e}") from e
 
     def _delete_existing_rows(self, target_date: str) -> None:
         """対象日付の既存行を削除する"""

@@ -6,7 +6,7 @@ from gspread.utils import rowcol_to_a1
 
 from src.config import get_logger
 from src.domain import (
-    AssetRetrievalFailed,
+    AssetRetrievalError,
     AssetValuation,
     CumulativeContributions,
     FinancialAsset,
@@ -57,10 +57,10 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
             history = self._batch_get_assets(headers, target_rows)
             logger.info("金融資産履歴を取得しました", extra={"days": days, "count": len(history.assets)})
             return history
-        except (AssetRetrievalFailed, ValueError):
+        except (AssetRetrievalError, ValueError):
             raise
         except Exception as e:
-            raise AssetRetrievalFailed.during_fetching() from e
+            raise AssetRetrievalError.during_fetching() from e
 
     def _batch_get_assets(self, headers: list[str], target_rows: list[int]) -> FinancialAssetHistory:
         if not target_rows:

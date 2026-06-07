@@ -1,4 +1,4 @@
-from shared.domain.exceptions import AssetRecordError
+from shared.domain.exceptions import AssetSaveError
 from shared.domain.financial_asset import (
     AssetValuation,
     CumulativeContributions,
@@ -6,7 +6,7 @@ from shared.domain.financial_asset import (
     FinancialAssetHistory,
     GainsOrLosses,
 )
-from shared.domain.financial_asset_repository import IFinancialAssetRepository
+from shared.domain.financial_asset_repository_interface import IFinancialAssetRepository
 
 __all__ = [
     # Models
@@ -18,5 +18,5 @@ __all__ = [
     # Interfaces
     "IFinancialAssetRepository",
     # Exceptions
-    "AssetRecordError",
+    "AssetSaveError",
 ]

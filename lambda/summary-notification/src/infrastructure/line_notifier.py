@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from src.application import INotifier, NotificationFailed
+from src.application import INotifier, NotificationError
 from src.config import get_logger
 
 logger = get_logger()
@@ -35,7 +35,7 @@ class LineNotifier(INotifier):
             messages: 通知メッセージリスト
 
         Raises:
-            NotificationFailed: 通知送信失敗時
+            NotificationError: 通知送信失敗時
         """
         try:
             line_messages = self._convert_to_line_format(messages)
@@ -47,9 +47,9 @@ class LineNotifier(INotifier):
                 self._send_batch(batch)
 
         except requests.exceptions.RequestException as e:
-            raise NotificationFailed.during_request() from e
+            raise NotificationError.during_request() from e
         except Exception as e:
-            raise NotificationFailed.before_request() from e
+            raise NotificationError.before_request() from e
 
     def _send_batch(self, line_messages: list[dict]) -> None:
         """LINE API へメッセージを送信

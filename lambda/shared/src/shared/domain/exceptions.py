@@ -1,2 +1,2 @@
-class AssetRecordError(Exception):
-    """資産レコード操作の例外"""
+class AssetSaveError(Exception):
+    """リポジトリへの保存失敗例外"""
