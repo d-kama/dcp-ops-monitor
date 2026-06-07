@@ -1,6 +1,6 @@
 import pytest
 
-from src.application import NotificationFailed
+from src.application import NotificationError
 from src.infrastructure import LineNotifier
 
 LINE_API_URL = "http://test.invalid/line/messages"
@@ -30,14 +30,14 @@ class TestLineNotifier:
         assert sent_body["messages"][0]["type"] == "text"
         assert sent_body["messages"][0]["text"] == "テストメッセージ"
 
-    def test_notify__api_error_raises_notification_failed(self, notifier, requests_mock):
-        """API エラー時に NotificationFailed が発生する"""
+    def test_notify__api_error_raises_notification_error(self, notifier, requests_mock):
+        """API エラー時に NotificationError が発生する"""
         # given
         requests_mock.post(LINE_API_URL, status_code=500)
         messages = ["テスト"]
 
         # when, then
-        with pytest.raises(NotificationFailed):
+        with pytest.raises(NotificationError):
             notifier.notify(messages)
 
     def test_notify__authorization_header(self, notifier, requests_mock):

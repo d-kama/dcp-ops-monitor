@@ -6,11 +6,11 @@ from shared.domain.financial_asset import (
     GainsOrLosses,
     LatestPortfolioTotal,
 )
-from shared.domain.financial_asset_repository import IFinancialAssetRepository
+from shared.domain.financial_asset_repository_interface import IFinancialAssetRepository
 
 from .exceptions import (
-    AssetRetrievalFailed,
-    SummaryNotificationFailed,
+    AssetRetrievalError,
+    SummaryNotificationError,
 )
 
 __all__ = [
@@ -24,6 +24,6 @@ __all__ = [
     # Interfaces
     "IFinancialAssetRepository",
     # Exceptions
-    "AssetRetrievalFailed",
-    "SummaryNotificationFailed",
+    "AssetRetrievalError",
+    "SummaryNotificationError",
 ]

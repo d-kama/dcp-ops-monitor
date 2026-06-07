@@ -90,8 +90,8 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 | モジュール | 内容 |
 |---|---|
 | `domain/financial_asset.py` | `FinancialAsset` / `FinancialAssetHistory` / `AssetValuation` 等のドメインモデル |
-| `domain/financial_asset_repository.py` | `IFinancialAssetRepository`（読み書き両用の基底 IF） |
-| `domain/exceptions.py` | `AssetRecordError` 基底例外 |
+| `domain/financial_asset_repository_interface.py` | `IFinancialAssetRepository`（読み書き両用の基底 IF） |
+| `domain/exceptions.py` | `AssetSaveError` 基底例外 |
 | `infrastructure/ssm_parameter.py` | SSM Parameter Store クライアント |
 | `config/base_settings.py` | Logger・BaseSettings（aws-lambda-powertools ベース） |
 

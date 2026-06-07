@@ -29,10 +29,10 @@ def test_domain_exports_financial_asset_repository_interface() -> None:
 
 def test_domain_exports_exceptions() -> None:
     """domain __init__ から例外クラスをインポートできる（既存動作の回帰確認）."""
-    from src.domain import AssetRetrievalFailed, SummaryNotificationFailed
+    from src.domain import AssetRetrievalError, SummaryNotificationError
 
-    assert AssetRetrievalFailed is not None
-    assert SummaryNotificationFailed is not None
+    assert AssetRetrievalError is not None
+    assert SummaryNotificationError is not None
 
 
 def test_domain_all_contains_expected_symbols() -> None:
@@ -47,8 +47,8 @@ def test_domain_all_contains_expected_symbols() -> None:
         "GainsOrLosses",
         "LatestPortfolioTotal",
         "IFinancialAssetRepository",
-        "AssetRetrievalFailed",
-        "SummaryNotificationFailed",
+        "AssetRetrievalError",
+        "SummaryNotificationError",
     }
 
     assert set(domain_module.__all__) == expected

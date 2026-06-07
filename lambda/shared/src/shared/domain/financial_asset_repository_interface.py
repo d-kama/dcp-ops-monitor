@@ -14,7 +14,7 @@ class IFinancialAssetRepository(ABC):
         既存レコードを削除してから保存する（upsert セマンティクス）。
 
         Raises:
-            AssetRecordError: レコード保存失敗時
+            AssetSaveError: 保存失敗時
         """
 
     @abstractmethod

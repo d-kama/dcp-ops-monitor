@@ -2,8 +2,8 @@ from src.application import IAssetFetcher
 from src.domain import FinancialAssetHistory
 
 
-class MockSeleniumAssetFetcher(IAssetFetcher):
-    """Selenium WebDriver の Mock 実装（テスト用）
+class MockAssetFetcher(IAssetFetcher):
+    """IAssetFetcher の Mock 実装（テスト用）
 
     実際にブラウザを起動せず、事前に用意した金融資産履歴を返す Mock オブジェクト。
     fail_at を指定することで任意のステップで失敗させることができる。

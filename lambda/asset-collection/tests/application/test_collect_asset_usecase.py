@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.application import CollectAssetDailyUseCase, ExtractFailed, LoginFailed, NavigatePageFailed
+from src.application import CollectAssetDailyUseCase, ExtractError, LoginError, NavigatePageError
 from src.domain import (
     AssetValuation,
     CumulativeContributions,
@@ -66,9 +66,9 @@ def make_usecase(fetcher, repo=None, error_repo=None, config=None):
 
 def test_execute__all_steps_succeed__saves_assets(valid_history):
     """全ステップ成功時に save_daily が呼ばれる"""
-    from tests.fixtures.mocks import MockFinancialAssetRepository, MockSeleniumAssetFetcher
+    from tests.fixtures.mocks import MockAssetFetcher, MockFinancialAssetRepository
 
-    fetcher = MockSeleniumAssetFetcher(mock_history=valid_history)
+    fetcher = MockAssetFetcher(mock_history=valid_history)
     repo = MockFinancialAssetRepository()
     usecase = make_usecase(fetcher=fetcher, repo=repo)
 
@@ -81,14 +81,14 @@ def test_execute__all_steps_succeed__saves_assets(valid_history):
 
 
 def test_execute__login_fails__stores_screenshot_and_raises():
-    """login 失敗時にスクリーンショット保存 + LoginFailed を raise する"""
-    from tests.fixtures.mocks import MockErrorArtifactRepository, MockSeleniumAssetFetcher
+    """login 失敗時にスクリーンショット保存 + LoginError を raise する"""
+    from tests.fixtures.mocks import MockAssetFetcher, MockErrorArtifactRepository
 
-    fetcher = MockSeleniumAssetFetcher(fail_at="login")
+    fetcher = MockAssetFetcher(fail_at="login")
     error_repo = MockErrorArtifactRepository()
     usecase = make_usecase(fetcher=fetcher, error_repo=error_repo)
 
-    with pytest.raises(LoginFailed):
+    with pytest.raises(LoginError):
         usecase.execute()
 
     assert len(error_repo.stored_keys) == 1
@@ -97,12 +97,12 @@ def test_execute__login_fails__stores_screenshot_and_raises():
 
 def test_execute__login_fails__calls_logout_and_close():
     """login 失敗時でも finally で logout / close が呼ばれる"""
-    from tests.fixtures.mocks import MockSeleniumAssetFetcher
+    from tests.fixtures.mocks import MockAssetFetcher
 
-    fetcher = MockSeleniumAssetFetcher(fail_at="login")
+    fetcher = MockAssetFetcher(fail_at="login")
     usecase = make_usecase(fetcher=fetcher)
 
-    with pytest.raises(LoginFailed):
+    with pytest.raises(LoginError):
         usecase.execute()
 
     assert fetcher.logout_called
@@ -110,14 +110,14 @@ def test_execute__login_fails__calls_logout_and_close():
 
 
 def test_execute__navigate_fails__stores_screenshot_and_raises():
-    """navigate 失敗時にスクリーンショット保存 + NavigatePageFailed を raise する"""
-    from tests.fixtures.mocks import MockErrorArtifactRepository, MockSeleniumAssetFetcher
+    """navigate 失敗時にスクリーンショット保存 + NavigatePageError を raise する"""
+    from tests.fixtures.mocks import MockAssetFetcher, MockErrorArtifactRepository
 
-    fetcher = MockSeleniumAssetFetcher(fail_at="navigate")
+    fetcher = MockAssetFetcher(fail_at="navigate")
     error_repo = MockErrorArtifactRepository()
     usecase = make_usecase(fetcher=fetcher, error_repo=error_repo)
 
-    with pytest.raises(NavigatePageFailed):
+    with pytest.raises(NavigatePageError):
         usecase.execute()
 
     assert len(error_repo.stored_keys) == 1
@@ -125,14 +125,14 @@ def test_execute__navigate_fails__stores_screenshot_and_raises():
 
 
 def test_execute__extract_fails__stores_page_source_and_raises():
-    """extract 失敗時にページソース保存 + ExtractFailed を raise する"""
-    from tests.fixtures.mocks import MockErrorArtifactRepository, MockSeleniumAssetFetcher
+    """extract 失敗時にページソース保存 + ExtractError を raise する"""
+    from tests.fixtures.mocks import MockAssetFetcher, MockErrorArtifactRepository
 
-    fetcher = MockSeleniumAssetFetcher(fail_at="extract")
+    fetcher = MockAssetFetcher(fail_at="extract")
     error_repo = MockErrorArtifactRepository()
     usecase = make_usecase(fetcher=fetcher, error_repo=error_repo)
 
-    with pytest.raises(ExtractFailed):
+    with pytest.raises(ExtractError):
         usecase.execute()
 
     assert len(error_repo.stored_keys) == 1
@@ -141,22 +141,22 @@ def test_execute__extract_fails__stores_page_source_and_raises():
 
 def test_execute__artifact_store_fails__does_not_raise_artifact_error():
     """エラーアーティファクト保存失敗時は警告ログのみで例外を握りつぶす"""
-    from tests.fixtures.mocks import MockErrorArtifactRepository, MockSeleniumAssetFetcher
+    from tests.fixtures.mocks import MockAssetFetcher, MockErrorArtifactRepository
 
-    fetcher = MockSeleniumAssetFetcher(fail_at="login")
+    fetcher = MockAssetFetcher(fail_at="login")
     error_repo = MockErrorArtifactRepository(should_fail=True)
     usecase = make_usecase(fetcher=fetcher, error_repo=error_repo)
 
-    # LoginFailed は raise されるが ErrorArtifactUploadError は伝播しない
-    with pytest.raises(LoginFailed):
+    # LoginError は raise されるが ErrorArtifactUploadError は伝播しない
+    with pytest.raises(LoginError):
         usecase.execute()
 
 
 def test_execute__success__calls_logout_and_close(valid_history):
     """成功時も finally で logout / close が呼ばれる"""
-    from tests.fixtures.mocks import MockSeleniumAssetFetcher
+    from tests.fixtures.mocks import MockAssetFetcher
 
-    fetcher = MockSeleniumAssetFetcher(mock_history=valid_history)
+    fetcher = MockAssetFetcher(mock_history=valid_history)
     usecase = make_usecase(fetcher=fetcher)
 
     usecase.execute()
