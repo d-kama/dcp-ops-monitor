@@ -31,4 +31,5 @@ class IFinancialAssetRepository(ABC):
 
         Raises:
             ValueError: days が 0 以下の場合
+            AssetRetrievalError: 取得失敗時
         """
