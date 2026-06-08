@@ -24,7 +24,7 @@ devpod（プロバイダー: docker）でワークスペースを作成し、Zed
 
    1. GitHub Web で Fine-grained PAT を発行
       - Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token
-      - Repository access: **Only select repositories** → `kamaD-y/dcp-ops-monitor`
+      - Repository access: **Only select repositories** → `d-kama/dcp-ops-monitor`
       - Repository permissions:
         - Contents: Read and write（`git push` / `git pull`）
         - Pull requests: Read and write（`gh pr create` 等）
@@ -85,30 +85,13 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 
 各 Lambda は独立した uv プロジェクトであるため、共通コードをコピーせず shared パッケージとして一元管理することで整合性を保ちます。
 
-共通化している内容:
+共通化している内容: ドメインモデル・リポジトリ IF・SSM クライアント・Logger。
 
-| モジュール | 内容 |
-|---|---|
-| `domain/financial_asset.py` | `FinancialAsset` / `FinancialAssetHistory` / `AssetValuation` 等のドメインモデル |
-| `domain/financial_asset_repository_interface.py` | `IFinancialAssetRepository`（読み書き両用の基底 IF） |
-| `domain/exceptions.py` | `AssetSaveError` 基底例外 |
-| `infrastructure/ssm_parameter.py` | SSM Parameter Store クライアント |
-| `config/base_settings.py` | Logger・BaseSettings（aws-lambda-powertools ベース） |
-
-リポジトリ IF は `shared` パッケージの `IFinancialAssetRepository` を両 Lambda で共有する。write 系メソッド（`save_daily`）は `summary-notification` 側で `NotImplementedError` を raise し、実質 Lambda ごとに read / write を使い分けている。
+> 各 Lambda の環境変数定義は `lib/dcp-ops-monitor-stack.ts` を参照してください。
 
 ---
 
 ## asset-collection
-
-### スクレイピングの層責務
-
-| 層 | 責務 |
-|---|---|
-| Application（`CollectAssetDailyUseCase`） | ステップの呼び出し順制御・エラーアーティファクトの取得と保存・ステップ固有例外への変換・ログアウトとドライバーのクリーンアップ（finally） |
-| Infrastructure（`SeleniumAssetFetcher`） | Selenium 操作のみ。失敗時は生の例外を raise する。アーティファクト取得用メソッド（`capture_screenshot` / `get_page_source`）を公開するが、保存は行わない |
-
-`IErrorArtifactRepository` は Application 層（`application/error_artifact_repository_interface.py`）に置く。S3 実装はこれを implement する Infrastructure クラスとして残す。
 
 ### なぜ Docker コンテナを使うか
 
@@ -135,16 +118,6 @@ aws ecr put-lifecycle-policy \
 ```
 
 > `cdk bootstrap` を再実行するとリセットされるため、再設定が必要です。
-
-### 環境変数
-
-| 環境変数 | 説明 |
-|---------|------|
-| `ASSET_FETCH_CONFIG_PARAMETER_NAME` | 資産取得設定（URL、認証情報等）の SSM パラメータ名 |
-| `SPREADSHEET_PARAMETER_NAME` | Google Spreadsheet 接続設定の SSM パラメータ名 |
-| `DATA_BUCKET_NAME` | エラーアーティファクト保存用 S3 バケット名 |
-| `USER_AGENT` | スクレイピング用ユーザーエージェント |
-| `POWERTOOLS_LOG_LEVEL` | ログレベル（ERROR / WARNING / INFO / DEBUG）、デフォルト: INFO |
 
 ### ローカルでのスクレイピング動作確認
 
@@ -200,36 +173,3 @@ curl -d "{}" http://localhost:8080/2015-03-31/functions/function/invocations
 ```bash
 docker compose down
 ```
-
----
-
-## summary-notification
-
-### 通知内容サンプル
-
-```
-確定拠出年金 運用状況通知Bot
-
-拠出金額累計: 2,280,000円
-評価損益: 456,000円
-資産評価額: 2,736,000円
-
-運用年数: 9.4年
-運用利回り: 0.051
-想定受取額(60歳): 6,540,000円
-
-資産評価額推移（直近1週間）
-2025-12-05: 2,736,000円 +0円
-2025-12-04: 2,736,000円 +6,000円
-2025-12-03: 2,730,000円 +5,000円
-2025-12-02: 2,725,000円 +5,000円
-2025-12-01: 2,720,000円 -
-```
-
-### 環境変数
-
-| 環境変数 | 説明 |
-|---------|------|
-| `LINE_MESSAGE_PARAMETER_NAME` | LINE 通知パラメータ（Channel Access Token、送信先 User ID 等）の SSM パラメータ名 |
-| `SPREADSHEET_PARAMETER_NAME` | Google Spreadsheet 接続設定の SSM パラメータ名 |
-| `POWERTOOLS_LOG_LEVEL` | ログレベル（ERROR / WARNING / INFO / DEBUG）、デフォルト: INFO |

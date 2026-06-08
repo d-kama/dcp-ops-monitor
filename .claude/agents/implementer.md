@@ -41,7 +41,7 @@ dcp-ops-monitor リポジトリで、`task-list.md` の 1 タスクを **TDD（�
 
 - **共通ルール**: 命名規則・テスト規約・Git 規約は `.claude/rules/common.md` / `lambda.md` / `cdk.md` に従う
 - **クリーンアーキテクチャの依存方向**: `Presentation → Application → Domain ← Infrastructure`。Domain 層を外部依存させない
-- **エラーハンドリング**: 握りつぶさない。失敗は早期検知 → ERROR ログ。詳細は `docs/ARCHITECTURE.md` / `docs/CONTRIBUTING.md` を参照
+- **エラーハンドリング**: 握りつぶさない。失敗は早期検知 → ERROR ログ。詳細は `ARCHITECTURE.md` / `CONTRIBUTING.md` を参照
 - **YAGNI**: design.md にない機能・抽象化は作らない
 - **既存コードから学ぶ**: 同じ Lambda 内の類似実装パターンを踏襲
 
@@ -74,5 +74,5 @@ npm run test:cdk  # CDK 変更時
 - design.md にない機能の追加・先回り実装
 - テストを書かずに実装すること（既存テストの修正のみで足りる場合を除く）
 - `--no-verify` での pre-commit フック回避
-- ユーザー承認なしに `docs/ARCHITECTURE.md` / `docs/CONTRIBUTING.md` を編集すること
+- ユーザー承認なしに `ARCHITECTURE.md` / `CONTRIBUTING.md` を編集すること
 - 実装範囲を対象タスク以外に広げること（リファクタ衝動の抑制）
