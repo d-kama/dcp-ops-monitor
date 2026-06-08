@@ -12,49 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 開発コマンド
 
-### Lint / Format
-
-```bash
-npm run lint          # TypeScript + Python lint（auto-fix）
-npm run lint:ci       # lint（fix なし、CI 用）
-npm run format        # TypeScript + Python format（auto-fix）
-npm run format:ci     # format（check only、CI 用）
-```
-
-### 型チェック
-
-```bash
-npm run type-check    # asset-collection の型チェック（summary-notification は未対応）
-```
-
-### テスト
-
-```bash
-# CDK スナップショットテスト
-npm run test:cdk
-
-# Lambda テスト（全体）
-npm run test:asset-collection
-npm run test:summary-notification
-
-# Lambda テスト（単一ファイル）
-cd lambda/asset-collection && ENV=test uv run pytest tests/domain/test_asset_record_object.py -v
-cd lambda/summary-notification && ENV=test uv run pytest tests/domain/test_asset_object.py -v
-
-# Lambda テスト（単一関数）
-cd lambda/asset-collection && ENV=test uv run pytest tests/domain/test_asset_record_object.py::test_function_name -v
-```
-
-### ローカル実行（Docker Compose）
-
-asset-collection Lambda を LocalStack と組み合わせて動かす:
-
-```bash
-docker compose up          # LocalStack + asset-collection コンテナ起動
-docker compose up --build  # イメージ再ビルドして起動
-```
-
-LocalStack 起動時に `localstack/ready.sh` が S3 バケットと SSM パラメータを自動作成する（`.env.local` の値を使用）。
+Lint / Format・型チェック・テスト・ローカル実行（Docker Compose）のコマンドは [CONTRIBUTING.md](CONTRIBUTING.md#開発コマンド) を参照。
 
 ## ドキュメント管理
 
@@ -63,5 +21,6 @@ LocalStack 起動時に `localstack/ready.sh` が S3 バケットと SSM パラ�
 | ファイル | 内容 |
 |---------|------|
 | @CONTEXT.md | ドメイン用語集（正式名称・避けるべき表現） |
-| @ARCHITECTURE.md | アーキテクチャ概要（概要、コードマップ、不変条件） |
-| @CONTRIBUTING.md | セットアップ手順・Lambda アーキテクチャ方針・shared の背景・asset-collection のローカル検証手順 |
+| @ARCHITECTURE.md | アーキテクチャ概要（概要、コードマップ、不変条件、設計判断） |
+| @CONTRIBUTING.md | セットアップ手順・開発コマンド・asset-collection の運用/ローカル検証手順 |
+| docs/adr/ | 個別の設計判断の記録（ADR） |

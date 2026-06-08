@@ -11,7 +11,7 @@ DCP Ops Monitor は、確定拠出年金（Defined Contribution Plan）の運用
 ### トップレベル
 
 - `bin/dcp-ops-monitor.ts` — CDK アプリケーションエントリーポイント
-- `lib/dcp-ops-monitor-stack.ts` — AWS リソース定義（Lambda、EventBridge、S3、SSM、CloudWatch Alarm、SNS）
+- `lib/dcp-ops-monitor-stack.ts` — AWS リソース定義（Lambda、EventBridge、S3、SSM、CloudWatch Alarm、SNS）。各 Lambda の環境変数定義もここ
 - `lambda/` — Lambda 関数コード（uv workspace）
 - `docs/` — 設計・要件ドキュメント
 
@@ -47,6 +47,24 @@ Presentation → Application → Domain ← Infrastructure
 - Domain 層は他のいかなる層にも依存しない
 - Lambda 間の直接呼び出しは行わない（EventBridge によるスケジュール実行のみ）
 - 認証情報はコードに埋め込まず、すべて SSM Parameter Store から取得する
+
+## Design Rationale
+
+### クリーンアーキテクチャ 4 層構造
+
+各 Lambda を `presentation / application / domain / infrastructure` の 4 層で構成する理由:
+
+- Domain 層に外部依存を持ち込まないことで、ビジネスルールを独立してテスト・変更できる
+- Infrastructure 実装を差し替え可能にすることで、ローカルテスト（Mock / LocalStack）が容易になる
+- `handler.py`（Composition Root）に依存性注入を集約し、各層の責務を分離する
+
+### shared パッケージ
+
+`asset-collection` / `summary-notification` はそれぞれ独立した uv プロジェクトであるため、共通コード（ドメインモデル・リポジトリ IF・SSM クライアント・Logger）をコピーせず、uv workspace メンバーの `lambda/shared` パッケージとして一元管理し整合性を保つ。
+
+### asset-collection のコンテナデプロイ
+
+Selenium の依存解決のため Docker コンテナイメージでデプロイする。詳細は [ADR 0003](adr/0003-asset-collection-container-deploy.md) を参照。
 
 ## Cross-cutting Concerns
 

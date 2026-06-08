@@ -69,33 +69,44 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 
 ---
 
-## Lambda アーキテクチャ方針
+## 開発コマンド
 
-### なぜクリーンアーキテクチャ 4 層構造か
+### Lint / Format
 
-各 Lambda は `presentation / application / domain / infrastructure` の 4 層構造で実装しています。
+```bash
+npm run lint          # TypeScript + Python lint（auto-fix）
+npm run lint:ci       # lint（fix なし、CI 用）
+npm run format        # TypeScript + Python format（auto-fix）
+npm run format:ci     # format（check only、CI 用）
+```
 
-- Domain 層に外部依存を持ち込まないことで、ビジネスルールを独立してテスト・変更できる
-- Infrastructure 実装を差し替え可能にすることで、ローカルテスト（Mock / LocalStack）が容易になる
-- `handler.py`（Composition Root）に依存性注入を集約することで、各層の責務を明確に分離できる
+### 型チェック
 
-### なぜ shared パッケージがあるか
+```bash
+npm run type-check    # asset-collection の型チェック（summary-notification は未対応）
+```
 
-`lambda/shared` は uv workspace のメンバーとして、`asset-collection` と `summary-notification` の両 Lambda から依存されます。
+### テスト
 
-各 Lambda は独立した uv プロジェクトであるため、共通コードをコピーせず shared パッケージとして一元管理することで整合性を保ちます。
+```bash
+# CDK スナップショットテスト
+npm run test:cdk
 
-共通化している内容: ドメインモデル・リポジトリ IF・SSM クライアント・Logger。
+# Lambda テスト（全体）
+npm run test:asset-collection
+npm run test:summary-notification
 
-> 各 Lambda の環境変数定義は `lib/dcp-ops-monitor-stack.ts` を参照してください。
+# Lambda テスト（単一ファイル）
+cd lambda/asset-collection && ENV=test uv run pytest tests/domain/test_asset_record_object.py -v
+cd lambda/summary-notification && ENV=test uv run pytest tests/domain/test_asset_object.py -v
+
+# Lambda テスト（単一関数）
+cd lambda/asset-collection && ENV=test uv run pytest tests/domain/test_asset_record_object.py::test_function_name -v
+```
 
 ---
 
 ## asset-collection
-
-### なぜ Docker コンテナを使うか
-
-Selenium を Lambda の zip パッケージ方式でデプロイする場合、Chrome / ChromeDriver のバイナリと Python パッケージの依存関係の調整が煩雑になります。コンテナイメージ方式にすることでこの問題を回避しています。
 
 ### ECR ライフサイクルポリシー
 
@@ -161,6 +172,8 @@ driver.quit()  # 終了時
 ```bash
 docker compose up -d --build
 ```
+
+   LocalStack 起動時に `localstack/ready.sh` が S3 バケットと SSM パラメータを自動作成する（`.env.local` の値を使用）。
 
 3. Lambda を呼び出す
 
