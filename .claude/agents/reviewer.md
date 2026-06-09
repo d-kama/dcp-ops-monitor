@@ -44,7 +44,7 @@ dcp-ops-monitor の実装差分をレビューする専門エージェント。*
 
 - 失敗を握りつぶしていないか
 - 適切な ERROR ログ出力があるか
-- スクレイピング失敗時の S3 アーティファクト保存、通知失敗時の例外 raise など、`docs/ARCHITECTURE.md` / `docs/CONTRIBUTING.md` の方針に沿っているか
+- スクレイピング失敗時の S3 アーティファクト保存、通知失敗時の例外 raise など、`ARCHITECTURE.md` / `CONTRIBUTING.md` の方針に沿っているか
 
 ### 5. 命名規則
 

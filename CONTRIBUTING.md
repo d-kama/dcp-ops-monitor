@@ -24,7 +24,7 @@ devpod（プロバイダー: docker）でワークスペースを作成し、Zed
 
    1. GitHub Web で Fine-grained PAT を発行
       - Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token
-      - Repository access: **Only select repositories** → `kamaD-y/dcp-ops-monitor`
+      - Repository access: **Only select repositories** → `d-kama/dcp-ops-monitor`
       - Repository permissions:
         - Contents: Read and write（`git push` / `git pull`）
         - Pull requests: Read and write（`gh pr create` 等）
@@ -69,50 +69,44 @@ CDK 初回ブートストラップ（初回のみ）: `cdk bootstrap aws://ACCOU
 
 ---
 
-## Lambda アーキテクチャ方針
+## 開発コマンド
 
-### なぜクリーンアーキテクチャ 4 層構造か
+### Lint / Format
 
-各 Lambda は `presentation / application / domain / infrastructure` の 4 層構造で実装しています。
+```bash
+npm run lint          # TypeScript + Python lint（auto-fix）
+npm run lint:ci       # lint（fix なし、CI 用）
+npm run format        # TypeScript + Python format（auto-fix）
+npm run format:ci     # format（check only、CI 用）
+```
 
-- Domain 層に外部依存を持ち込まないことで、ビジネスルールを独立してテスト・変更できる
-- Infrastructure 実装を差し替え可能にすることで、ローカルテスト（Mock / LocalStack）が容易になる
-- `handler.py`（Composition Root）に依存性注入を集約することで、各層の責務を明確に分離できる
+### 型チェック
 
-### なぜ shared パッケージがあるか
+```bash
+npm run type-check    # asset-collection の型チェック（summary-notification は未対応）
+```
 
-`lambda/shared` は uv workspace のメンバーとして、`asset-collection` と `summary-notification` の両 Lambda から依存されます。
+### テスト
 
-各 Lambda は独立した uv プロジェクトであるため、共通コードをコピーせず shared パッケージとして一元管理することで整合性を保ちます。
+```bash
+# CDK スナップショットテスト
+npm run test:cdk
 
-共通化している内容:
+# Lambda テスト（全体）
+npm run test:asset-collection
+npm run test:summary-notification
 
-| モジュール | 内容 |
-|---|---|
-| `domain/financial_asset.py` | `FinancialAsset` / `FinancialAssetHistory` / `AssetValuation` 等のドメインモデル |
-| `domain/financial_asset_repository_interface.py` | `IFinancialAssetRepository`（読み書き両用の基底 IF） |
-| `domain/exceptions.py` | `AssetSaveError` 基底例外 |
-| `infrastructure/ssm_parameter.py` | SSM Parameter Store クライアント |
-| `config/base_settings.py` | Logger・BaseSettings（aws-lambda-powertools ベース） |
+# Lambda テスト（単一ファイル）
+cd lambda/asset-collection && ENV=test uv run pytest tests/domain/test_asset_record_object.py -v
+cd lambda/summary-notification && ENV=test uv run pytest tests/domain/test_asset_object.py -v
 
-リポジトリ IF は `shared` パッケージの `IFinancialAssetRepository` を両 Lambda で共有する。write 系メソッド（`save_daily`）は `summary-notification` 側で `NotImplementedError` を raise し、実質 Lambda ごとに read / write を使い分けている。
+# Lambda テスト（単一関数）
+cd lambda/asset-collection && ENV=test uv run pytest tests/domain/test_asset_record_object.py::test_function_name -v
+```
 
 ---
 
 ## asset-collection
-
-### スクレイピングの層責務
-
-| 層 | 責務 |
-|---|---|
-| Application（`CollectAssetDailyUseCase`） | ステップの呼び出し順制御・エラーアーティファクトの取得と保存・ステップ固有例外への変換・ログアウトとドライバーのクリーンアップ（finally） |
-| Infrastructure（`SeleniumAssetFetcher`） | Selenium 操作のみ。失敗時は生の例外を raise する。アーティファクト取得用メソッド（`capture_screenshot` / `get_page_source`）を公開するが、保存は行わない |
-
-`IErrorArtifactRepository` は Application 層（`application/error_artifact_repository_interface.py`）に置く。S3 実装はこれを implement する Infrastructure クラスとして残す。
-
-### なぜ Docker コンテナを使うか
-
-Selenium を Lambda の zip パッケージ方式でデプロイする場合、Chrome / ChromeDriver のバイナリと Python パッケージの依存関係の調整が煩雑になります。コンテナイメージ方式にすることでこの問題を回避しています。
 
 ### ECR ライフサイクルポリシー
 
@@ -135,16 +129,6 @@ aws ecr put-lifecycle-policy \
 ```
 
 > `cdk bootstrap` を再実行するとリセットされるため、再設定が必要です。
-
-### 環境変数
-
-| 環境変数 | 説明 |
-|---------|------|
-| `ASSET_FETCH_CONFIG_PARAMETER_NAME` | 資産取得設定（URL、認証情報等）の SSM パラメータ名 |
-| `SPREADSHEET_PARAMETER_NAME` | Google Spreadsheet 接続設定の SSM パラメータ名 |
-| `DATA_BUCKET_NAME` | エラーアーティファクト保存用 S3 バケット名 |
-| `USER_AGENT` | スクレイピング用ユーザーエージェント |
-| `POWERTOOLS_LOG_LEVEL` | ログレベル（ERROR / WARNING / INFO / DEBUG）、デフォルト: INFO |
 
 ### ローカルでのスクレイピング動作確認
 
@@ -189,6 +173,8 @@ driver.quit()  # 終了時
 docker compose up -d --build
 ```
 
+   LocalStack 起動時に `localstack/ready.sh` が S3 バケットと SSM パラメータを自動作成する（`.env.local` の値を使用）。
+
 3. Lambda を呼び出す
 
 ```bash
@@ -200,36 +186,3 @@ curl -d "{}" http://localhost:8080/2015-03-31/functions/function/invocations
 ```bash
 docker compose down
 ```
-
----
-
-## summary-notification
-
-### 通知内容サンプル
-
-```
-確定拠出年金 運用状況通知Bot
-
-拠出金額累計: 2,280,000円
-評価損益: 456,000円
-資産評価額: 2,736,000円
-
-運用年数: 9.4年
-運用利回り: 0.051
-想定受取額(60歳): 6,540,000円
-
-資産評価額推移（直近1週間）
-2025-12-05: 2,736,000円 +0円
-2025-12-04: 2,736,000円 +6,000円
-2025-12-03: 2,730,000円 +5,000円
-2025-12-02: 2,725,000円 +5,000円
-2025-12-01: 2,720,000円 -
-```
-
-### 環境変数
-
-| 環境変数 | 説明 |
-|---------|------|
-| `LINE_MESSAGE_PARAMETER_NAME` | LINE 通知パラメータ（Channel Access Token、送信先 User ID 等）の SSM パラメータ名 |
-| `SPREADSHEET_PARAMETER_NAME` | Google Spreadsheet 接続設定の SSM パラメータ名 |
-| `POWERTOOLS_LOG_LEVEL` | ログレベル（ERROR / WARNING / INFO / DEBUG）、デフォルト: INFO |

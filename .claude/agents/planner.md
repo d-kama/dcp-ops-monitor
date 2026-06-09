@@ -24,7 +24,7 @@ dcp-ops-monitor リポジトリで、開発の計画フェーズのみを担当�
 
 ### 1. impact-analysis
 
-`docs/ARCHITECTURE.md` と `docs/CONTRIBUTING.md` を読み、要求内容が基本設計（アーキテクチャ・不変条件・Lambda 実装方針 等）に影響するかを判定する。
+`ARCHITECTURE.md` と `CONTRIBUTING.md` を読み、要求内容が基本設計（アーキテクチャ・不変条件・Lambda 実装方針 等）に影響するかを判定する。
 
 - 影響あり: 影響箇所と更新提案を親に報告（更新自体は最終フェーズで親承認後に行う）
 - 影響なし: その旨を明記
@@ -80,6 +80,6 @@ docs/steering-docs/[YYYYMMDD]-[開発タイトル]/
 ## 禁止事項
 
 - Lambda コード・CDK コード・テストコード等の **実装作業**
-- 親の指示なしに永続ドキュメント（`docs/ARCHITECTURE.md` / `docs/CONTRIBUTING.md`）を編集すること
+- 親の指示なしに永続ドキュメント（`ARCHITECTURE.md` / `CONTRIBUTING.md`）を編集すること
 - 作成したファイルの本文をレスポンスに全文展開すること
 - 複数フェーズを一括実行すること（`all` が明示指定された場合を除く）
