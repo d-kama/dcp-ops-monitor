@@ -64,7 +64,7 @@ Presentation → Application → Domain ← Infrastructure
 
 ### asset-collection のコンテナデプロイ
 
-Selenium の依存解決のため Docker コンテナイメージでデプロイする。詳細は [ADR 0003](adr/0003-asset-collection-container-deploy.md) を参照。
+Selenium の依存解決のため Docker コンテナイメージでデプロイする。詳細は [ADR 0003](docs/adr/0003-asset-collection-container-deploy.md) を参照。
 
 ## Cross-cutting Concerns
 
