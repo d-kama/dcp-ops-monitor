@@ -5,13 +5,12 @@ from src.config import AssetFetchConfig, get_logger
 from src.domain import IFinancialAssetRepository
 
 from .asset_fetcher_interface import ExtractError, IAssetFetcher, LoginError, NavigatePageError
-from .collect_asset_daily_interface import ICollectAssetDailyUseCase
 from .error_artifact_repository_interface import IErrorArtifactRepository
 
 logger = get_logger()
 
 
-class CollectAssetDailyUseCase(ICollectAssetDailyUseCase):
+class CollectAssetDailyUseCase:
     def __init__(
         self,
         fetcher: IAssetFetcher,

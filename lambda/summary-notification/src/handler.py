@@ -1,6 +1,6 @@
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
-from src.application import INotifier, INotifyWeeklySummaryUseCase, NotifyWeeklySummaryUseCase
+from src.application import INotifier, NotifyWeeklySummaryUseCase
 from src.config import EnvSettings, get_logger, get_settings
 from src.domain import IFinancialAssetRepository
 from src.infrastructure import (
@@ -35,7 +35,7 @@ def _build_notifier(settings: EnvSettings) -> INotifier:
     )
 
 
-def build_usecase() -> INotifyWeeklySummaryUseCase:
+def build_usecase() -> NotifyWeeklySummaryUseCase:
     settings = get_settings()
     return NotifyWeeklySummaryUseCase(
         repository=_build_financial_asset_repository(settings),

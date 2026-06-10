@@ -4,7 +4,6 @@ from string import Template
 from src.domain import AssetValuation, FinancialAssetHistory, IFinancialAssetRepository, LatestPortfolioTotal
 
 from .notifier_interface import INotifier
-from .notify_weekly_summary_interface import INotifyWeeklySummaryUseCase
 
 _TEMPLATE = Template(
     "確定拠出年金 運用状況通知Bot\n"
@@ -19,7 +18,7 @@ _TEMPLATE = Template(
 _WEEKLY_HEADER = "資産評価額推移（直近1週間）\n"
 
 
-class NotifyWeeklySummaryUseCase(INotifyWeeklySummaryUseCase):
+class NotifyWeeklySummaryUseCase:
     DAYS = 7
 
     def __init__(self, repository: IFinancialAssetRepository, notifier: INotifier) -> None:
