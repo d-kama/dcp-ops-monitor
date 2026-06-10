@@ -1,10 +1,10 @@
 from typing import Literal
 
-from src.application import INotifyWeeklySummaryUseCase
+from src.application import NotifyWeeklySummaryUseCase
 
 
 class Main:
-    def __init__(self, usecase: INotifyWeeklySummaryUseCase) -> None:
+    def __init__(self, usecase: NotifyWeeklySummaryUseCase) -> None:
         self.usecase = usecase
 
     def run(self) -> Literal["Success"]:

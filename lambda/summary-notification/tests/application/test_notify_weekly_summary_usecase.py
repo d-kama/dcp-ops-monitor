@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from src.application import INotifyWeeklySummaryUseCase, NotifyWeeklySummaryUseCase
+from src.application import NotifyWeeklySummaryUseCase
 from src.application.notifier_interface import INotifier, NotificationError
 from src.domain import (
     AssetRetrievalError,
@@ -233,17 +233,6 @@ class TestMain:
         message = notifier.messages_sent[0]
         assert "確定拠出年金 運用状況通知Bot" in message
         assert "1,200,000円" in message
-
-    def test_main__accepts_inotify_weekly_summary_usecase(self):
-        """Main の __init__ が INotifyWeeklySummaryUseCase を受け付ける"""
-        from src.presentation import Main
-
-        class StubUseCase(INotifyWeeklySummaryUseCase):
-            def execute(self) -> None:
-                pass
-
-        main = Main(usecase=StubUseCase())
-        assert isinstance(main, Main)
 
     def test_main__empty_history_raises_value_error(self):
         """空の資産履歴の場合 ValueError が伝播する"""
