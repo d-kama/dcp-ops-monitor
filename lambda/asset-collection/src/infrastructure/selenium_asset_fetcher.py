@@ -79,6 +79,20 @@ class SeleniumAssetFetcher(IAssetFetcher):
         # ログアウトボタンがなければログイン失敗とする
         self.driver.find_element(By.LINK_TEXT, "ログアウト")
 
+        # TODO: プラン移行完了後に削除する
+        self._select_transferring_out_plan()
+
+    def _select_transferring_out_plan(self) -> None:
+        rows = self.driver.find_elements(By.CSS_SELECTOR, "table.inputTable tbody tr")
+        for row in rows:
+            status_cells = row.find_elements(By.CSS_SELECTOR, "td[data-lang='jp']")
+            for cell in status_cells:
+                if "転出処理中" in cell.text:
+                    row.find_element(By.CSS_SELECTOR, "input[type='radio']").click()
+                    self.driver.find_element(By.ID, "btnSubmit").click()
+                    return
+        raise ValueError("転出処理中のプランが見つかりませんでした。")
+
     def navigate_to_asset_page(self) -> None:
         link_asset_valuation = self.driver.find_element(By.ID, "mainMenu01")
         link_asset_valuation.click()
