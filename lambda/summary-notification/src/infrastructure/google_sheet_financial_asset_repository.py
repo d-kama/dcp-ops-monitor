@@ -52,7 +52,9 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
             latest_dt = date.fromisoformat(max(data_dates))
             cutoff_dt = latest_dt - timedelta(days=days)
             target_rows = [
-                i + self.HEADER_ROW + 1 for i, d in enumerate(data_dates) if d and date.fromisoformat(d) > cutoff_dt
+                i + self.HEADER_ROW + 1
+                for i, d in enumerate(data_dates)
+                if d and date.fromisoformat(str(d)) > cutoff_dt
             ]
             history = self._batch_get_assets(headers, target_rows)
             logger.info("金融資産履歴を取得しました", extra={"days": days, "count": len(history.assets)})
