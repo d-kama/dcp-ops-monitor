@@ -14,8 +14,8 @@ logger = get_logger()
 
 
 @logger.inject_lambda_context
-def handler(event: dict, context: LambdaContext) -> str | None:
-    return Main(build_usecase()).run()
+def handler(event: dict, context: LambdaContext) -> dict:
+    return Main(build_usecase()).run().model_dump()
 
 
 def _build_financial_asset_repository(settings: EnvSettings) -> IFinancialAssetRepository:

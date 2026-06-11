@@ -225,8 +225,9 @@ class TestMain:
         usecase = NotifyWeeklySummaryUseCase(repository=repository, notifier=notifier)
 
         main = Main(usecase=usecase)
-        main.run()
+        result = main.run()
 
+        assert result.status == "Success"
         assert repository.retrieve_called
         assert notifier.notify_called
         assert len(notifier.messages_sent) == 1

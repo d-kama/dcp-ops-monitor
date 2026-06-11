@@ -1,3 +1,3 @@
-from .summary_notification_handler import Main
+from .summary_notification_handler import Main, SummaryNotificationResult
 
-__all__ = ["Main"]
+__all__ = ["Main", "SummaryNotificationResult"]
