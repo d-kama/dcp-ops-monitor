@@ -44,6 +44,16 @@ def test_open_start_page__calls_driver_get():
 # ---------- login ----------
 
 
+def _setup_transferring_out_row(fetcher: SeleniumAssetFetcher) -> MagicMock:
+    """_select_transferring_out_plan 用: 転出処理中のセルを持つ行をモックに登録する"""
+    mock_cell = MagicMock()
+    mock_cell.text = "転出処理中"
+    mock_row = MagicMock()
+    mock_row.find_elements.return_value = [mock_cell]
+    fetcher.driver.find_elements.return_value = [mock_row]
+    return mock_row
+
+
 def test_login__calls_driver_operations():
     """login() が WebDriver の find_element / send_keys / submit を正しく呼ぶ"""
     fetcher = _make_fetcher()
@@ -51,10 +61,34 @@ def test_login__calls_driver_operations():
     config.login_user_id.get_secret_value.return_value = "user"
     config.login_password.get_secret_value.return_value = "pass"
     config.login_birthdate.get_secret_value.return_value = "19900101"
+    _setup_transferring_out_row(fetcher)
 
     fetcher.login(config)
 
     assert fetcher.driver.find_element.called
+
+
+def test_login__transferring_out_row_found__clicks_radio_and_submit():
+    """login() で転出処理中の行が見つかった場合、ラジオボタンと決定ボタンを押下する"""
+    fetcher = _make_fetcher()
+    config = MagicMock()
+    mock_row = _setup_transferring_out_row(fetcher)
+
+    fetcher.login(config)
+
+    mock_row.find_element.assert_called_once_with("css selector", "input[type='radio']")
+    mock_row.find_element.return_value.click.assert_called_once()
+    fetcher.driver.find_element.assert_any_call("id", "btnSubmit")
+
+
+def test_login__transferring_out_row_not_found__raises_value_error():
+    """login() で転出処理中の行が見つからない場合、ValueError を raise する"""
+    fetcher = _make_fetcher()
+    config = MagicMock()
+    fetcher.driver.find_elements.return_value = []
+
+    with pytest.raises(ValueError, match="転出処理中のプランが見つかりませんでした"):
+        fetcher.login(config)
 
 
 def test_login__selenium_fails__raises_raw_exception():
