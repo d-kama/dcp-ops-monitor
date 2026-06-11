@@ -16,9 +16,9 @@ settings = get_settings()
 
 
 @logger.inject_lambda_context
-def handler(event: dict, context: LambdaContext) -> str | None:
+def handler(event: dict, context: LambdaContext) -> dict:
     """Lambda handler エントリーポイント"""
-    return Main(build_usecase()).run()
+    return Main(build_usecase()).run().model_dump()
 
 
 def build_usecase() -> CollectAssetDailyUseCase:
