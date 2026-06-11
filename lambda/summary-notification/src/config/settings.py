@@ -13,4 +13,4 @@ class EnvSettings(BaseEnvSettings):
 
 @lru_cache()
 def get_settings() -> EnvSettings:
-    return EnvSettings()  # ty: ignore[missing-argument] # pyright: ignore[reportCallIssue]
+    return EnvSettings()  # pyright: ignore[reportCallIssue]
