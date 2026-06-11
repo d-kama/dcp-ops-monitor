@@ -83,7 +83,7 @@ npm run format:ci     # format（check only、CI 用）
 ### 型チェック
 
 ```bash
-npm run type-check    # asset-collection の型チェック（summary-notification は未対応）
+npm run type-check 
 ```
 
 ### テスト
