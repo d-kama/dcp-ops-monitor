@@ -13,8 +13,7 @@
     "cdk": "cdk",
     "lint": "biome lint --write . && uvx ruff check lambda/",
     "lint:ci": "biome lint . && uvx ruff check --no-fix lambda/",
-    "type-check": "cd lambda/asset-collection && uvx ty check src/ --ignore unresolved-import --ignore unresolved-attribute",
-    "type-check:all": "npm run type-check",
+    "type-check": "cd lambda && uvx ty check . --ignore unresolved-import --ignore unresolved-attribute",
     "format": "biome format --write . && uvx ruff format lambda/",
     "format:ci": "biome format . && uvx ruff format --check lambda/"
   },

@@ -18,7 +18,7 @@
       }
     },
     "Python": {
-      "language_servers": ["pyright", "ruff"],
+      "language_servers": ["ty", "ruff", "!basedpyright", "!pyrefly", "!pyright", "!pylsp"],
       "formatter": "language_server",
       "code_actions_on_format": {
         "source.fixAll": true,

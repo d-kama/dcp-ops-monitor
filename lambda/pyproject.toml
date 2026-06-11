@@ -19,3 +19,6 @@ ignore = ["F401", "F841"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.ty.src]
+exclude = ["**/tests/**"]
