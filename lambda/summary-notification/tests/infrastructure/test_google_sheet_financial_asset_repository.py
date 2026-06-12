@@ -47,9 +47,9 @@ def repository(mock_worksheet):
         yield repo
 
 
-class TestRetrieveFromWithDays:
-    def test_retrieve_from_with_days__returns_assets_within_range(self, repository, mock_worksheet):
-        """直近 N 日以内の資産レコードが FinancialAssetHistory として返る"""
+class TestRetrieveWithinDays:
+    def test_retrieve_within_days__returns_assets_within_range(self, repository, mock_worksheet):
+        """基準日から N 日以内の資産レコードが FinancialAssetHistory として返る"""
         mock_worksheet.row_values.return_value = HEADERS
         mock_worksheet.col_values.return_value = ["date", "2025-01-10", "2025-01-09", "2025-01-05"]
         mock_worksheet.batch_get.return_value = [
@@ -57,7 +57,7 @@ class TestRetrieveFromWithDays:
             [_make_row("2025-01-09", "Product A", 990_000, 900_000, 90_000)],
         ]
 
-        result = repository.retrieve_from_with_days(days=7)
+        result = repository.retrieve_within_days(days=3, base_date=date(2025, 1, 10))
 
         assert isinstance(result, FinancialAssetHistory)
         assert len(result.assets) == 2
@@ -68,46 +68,72 @@ class TestRetrieveFromWithDays:
         assert asset.cumulative_contributions == CumulativeContributions(value=900_000)
         assert asset.gains_or_losses == GainsOrLosses(value=100_000)
 
-    def test_retrieve_from_with_days__empty_sheet_returns_empty_history(self, repository, mock_worksheet):
+    def test_retrieve_within_days__cutoff_date_is_excluded(self, repository, mock_worksheet):
+        """ちょうど (base_date - days) の日付は対象外になる"""
+        mock_worksheet.row_values.return_value = HEADERS
+        mock_worksheet.col_values.return_value = ["date", "2025-01-10", "2025-01-03"]
+        mock_worksheet.batch_get.return_value = [
+            [_make_row("2025-01-10", "Product A", 1_000_000, 900_000, 100_000)],
+        ]
+
+        result = repository.retrieve_within_days(days=7, base_date=date(2025, 1, 10))
+
+        assert len(result.assets) == 1
+        mock_worksheet.batch_get.assert_called_once_with(["A2:E2"])
+
+    def test_retrieve_within_days__future_dates_are_excluded(self, repository, mock_worksheet):
+        """基準日より未来の日付は対象外になる"""
+        mock_worksheet.row_values.return_value = HEADERS
+        mock_worksheet.col_values.return_value = ["date", "2025-01-12", "2025-01-10"]
+        mock_worksheet.batch_get.return_value = [
+            [_make_row("2025-01-10", "Product A", 1_000_000, 900_000, 100_000)],
+        ]
+
+        result = repository.retrieve_within_days(days=7, base_date=date(2025, 1, 10))
+
+        assert len(result.assets) == 1
+        mock_worksheet.batch_get.assert_called_once_with(["A3:E3"])
+
+    def test_retrieve_within_days__empty_sheet_returns_empty_history(self, repository, mock_worksheet):
         """シートが空の場合は空の FinancialAssetHistory を返す"""
         mock_worksheet.row_values.return_value = HEADERS
         mock_worksheet.col_values.return_value = ["date"]
 
-        result = repository.retrieve_from_with_days(days=7)
+        result = repository.retrieve_within_days(days=7, base_date=date(2025, 1, 10))
 
         assert result == FinancialAssetHistory(assets=[])
         mock_worksheet.batch_get.assert_not_called()
 
-    def test_retrieve_from_with_days__no_rows_in_range_returns_empty_history(self, repository, mock_worksheet):
+    def test_retrieve_within_days__no_rows_in_range_returns_empty_history(self, repository, mock_worksheet):
         """指定日数内にデータがない場合は空の FinancialAssetHistory を返す"""
         mock_worksheet.row_values.return_value = HEADERS
         mock_worksheet.col_values.return_value = ["date", "2025-01-01"]
-        mock_worksheet.batch_get.return_value = []
 
-        result = repository.retrieve_from_with_days(days=1)
+        result = repository.retrieve_within_days(days=1, base_date=date(2025, 1, 10))
 
         assert result == FinancialAssetHistory(assets=[])
+        mock_worksheet.batch_get.assert_not_called()
 
-    def test_retrieve_from_with_days__days_zero_raises_value_error(self, repository):
+    def test_retrieve_within_days__days_zero_raises_value_error(self, repository):
         """days=0 は ValueError を送出する"""
         with pytest.raises(ValueError, match="days must be positive"):
-            repository.retrieve_from_with_days(days=0)
+            repository.retrieve_within_days(days=0, base_date=date(2025, 1, 10))
 
-    def test_retrieve_from_with_days__days_negative_raises_value_error(self, repository):
+    def test_retrieve_within_days__days_negative_raises_value_error(self, repository):
         """days が負の値の場合も ValueError を送出する"""
         with pytest.raises(ValueError, match="days must be positive"):
-            repository.retrieve_from_with_days(days=-1)
+            repository.retrieve_within_days(days=-1, base_date=date(2025, 1, 10))
 
-    def test_retrieve_from_with_days__gspread_error_raises_asset_retrieval_error(self, repository, mock_worksheet):
+    def test_retrieve_within_days__gspread_error_raises_asset_retrieval_error(self, repository, mock_worksheet):
         """gspread 例外発生時は AssetRetrievalError を送出する"""
         import gspread
 
         mock_worksheet.row_values.side_effect = gspread.exceptions.GSpreadException("API error")
 
         with pytest.raises(AssetRetrievalError):
-            repository.retrieve_from_with_days(days=7)
+            repository.retrieve_within_days(days=7, base_date=date(2025, 1, 10))
 
-    def test_retrieve_from_with_days__multiple_products_per_date(self, repository, mock_worksheet):
+    def test_retrieve_within_days__multiple_products_per_date(self, repository, mock_worksheet):
         """同一日付に複数商品がある場合もすべて返る"""
         mock_worksheet.row_values.return_value = HEADERS
         mock_worksheet.col_values.return_value = ["date", "2025-01-10", "2025-01-10"]
@@ -116,7 +142,7 @@ class TestRetrieveFromWithDays:
             [_make_row("2025-01-10", "Product B", 400_000, 350_000, 50_000)],
         ]
 
-        result = repository.retrieve_from_with_days(days=3)
+        result = repository.retrieve_within_days(days=3, base_date=date(2025, 1, 10))
 
         assert len(result.assets) == 2
         product_names = {a.product_name for a in result.assets}

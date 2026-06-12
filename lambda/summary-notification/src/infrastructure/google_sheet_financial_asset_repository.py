@@ -34,9 +34,7 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
     def save_daily(self, daily_assets: FinancialAssetHistory) -> None:
         raise NotImplementedError("summary-notification は書き込みをサポートしません")
 
-    # TODO: Repository内の最新日付からN日以内のデータを取得するようになっている。
-    # 実行日付からN日以内のデータとするか、検討。併せて、結果が空配列になるケースも考える。
-    def retrieve_from_with_days(self, days: int) -> FinancialAssetHistory:
+    def retrieve_within_days(self, days: int, base_date: date) -> FinancialAssetHistory:
         if days <= 0:
             raise ValueError(f"days must be positive: {days}")
 
@@ -46,18 +44,17 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
             date_values = self.worksheet.col_values(date_col)
             data_dates = date_values[self.HEADER_ROW :]
 
-            if not data_dates:
-                return FinancialAssetHistory(assets=[])
-
-            latest_dt = date.fromisoformat(max(data_dates))
-            cutoff_dt = latest_dt - timedelta(days=days)
+            cutoff_dt = base_date - timedelta(days=days)
             target_rows = [
                 i + self.HEADER_ROW + 1
                 for i, d in enumerate(data_dates)
-                if d and date.fromisoformat(str(d)) > cutoff_dt
+                if d and cutoff_dt < date.fromisoformat(str(d)) <= base_date
             ]
             history = self._batch_get_assets(headers, target_rows)
-            logger.info("金融資産履歴を取得しました", extra={"days": days, "count": len(history.assets)})
+            logger.info(
+                "金融資産履歴を取得しました",
+                extra={"days": days, "base_date": str(base_date), "count": len(history.assets)},
+            )
             return history
         except (AssetRetrievalError, ValueError):
             raise
