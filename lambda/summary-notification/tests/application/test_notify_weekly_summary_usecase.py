@@ -146,9 +146,12 @@ class TestNotifyWeeklySummaryUseCase:
         from datetime import datetime
         from zoneinfo import ZoneInfo
 
+        # 日付境界をまたいでも before/after のどちらかに一致するため決定的
+        before = datetime.now(ZoneInfo("Asia/Tokyo")).date()
         usecase.execute()
+        after = datetime.now(ZoneInfo("Asia/Tokyo")).date()
 
-        assert repository.last_base_date_arg == datetime.now(ZoneInfo("Asia/Tokyo")).date()
+        assert repository.last_base_date_arg in {before, after}
 
     def test_execute__empty_history_notifies_no_data_message(self):
         """空履歴の場合はデータなし通知を送信して正常終了する"""
