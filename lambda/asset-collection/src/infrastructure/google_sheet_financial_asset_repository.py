@@ -1,3 +1,5 @@
+from datetime import date
+
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread.utils import ValueInputOption
@@ -54,7 +56,7 @@ class GoogleSheetFinancialAssetRepository(IFinancialAssetRepository):
         if rows_to_delete:
             logger.info("既存行を削除しました", extra={"date": target_date, "count": len(rows_to_delete)})
 
-    def retrieve_from_with_days(self, days: int) -> FinancialAssetHistory:
+    def retrieve_within_days(self, days: int, base_date: date) -> FinancialAssetHistory:
         raise NotImplementedError("asset-collection は読み取りをサポートしません")
 
     def _append_assets(self, daily_assets: FinancialAssetHistory) -> None:

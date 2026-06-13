@@ -131,20 +131,43 @@ class TestNotifyWeeklySummaryUseCase:
         usecase: NotifyWeeklySummaryUseCase,
         repository: MockFinancialAssetRepository,
     ):
-        """repository.retrieve_from_with_days(7) が呼ばれる"""
+        """repository.retrieve_within_days(7, 実行日) が呼ばれる"""
         usecase.execute()
 
         assert repository.retrieve_called
         assert repository.last_days_arg == 7
 
-    def test_execute__empty_history_raises_value_error(self):
-        """空履歴の場合は ValueError を送出する"""
+    def test_execute__calls_repository_with_jst_today_as_base_date(
+        self,
+        usecase: NotifyWeeklySummaryUseCase,
+        repository: MockFinancialAssetRepository,
+    ):
+        """retrieve_within_days の基準日が JST の実行日になる"""
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+
+        # 日付境界をまたいでも before/after のどちらかに一致するため決定的
+        before = datetime.now(ZoneInfo("Asia/Tokyo")).date()
+        usecase.execute()
+        after = datetime.now(ZoneInfo("Asia/Tokyo")).date()
+
+        assert repository.last_base_date_arg in {before, after}
+
+    def test_execute__empty_history_notifies_no_data_message(self):
+        """空履歴の場合はデータなし通知を送信して正常終了する"""
+        expected = (
+            "確定拠出年金 運用状況通知Bot\n"
+            "\n"
+            "直近7日間の資産データがありません。\n"
+            "資産収集処理が失敗している可能性があります。"
+        )
         repository = MockFinancialAssetRepository(history=FinancialAssetHistory(assets=[]))
         notifier = MockNotifier()
         usecase = NotifyWeeklySummaryUseCase(repository=repository, notifier=notifier)
 
-        with pytest.raises(ValueError):
-            usecase.execute()
+        usecase.execute()
+
+        assert notifier.messages_sent == [expected]
 
     def test_execute__repository_failure_raises_asset_retrieval_error(self):
         """リポジトリ失敗時は AssetRetrievalError を伝播させる"""
@@ -235,8 +258,8 @@ class TestMain:
         assert "確定拠出年金 運用状況通知Bot" in message
         assert "1,200,000円" in message
 
-    def test_main__empty_history_raises_value_error(self):
-        """空の資産履歴の場合 ValueError が伝播する"""
+    def test_main__empty_history_notifies_no_data_and_succeeds(self):
+        """空の資産履歴の場合はデータなし通知を送信して正常終了する"""
         from src.presentation import Main
 
         repository = MockFinancialAssetRepository(history=FinancialAssetHistory(assets=[]))
@@ -244,6 +267,8 @@ class TestMain:
         usecase = NotifyWeeklySummaryUseCase(repository=repository, notifier=notifier)
 
         main = Main(usecase=usecase)
+        result = main.run()
 
-        with pytest.raises(ValueError):
-            main.run()
+        assert result.status == "Success"
+        assert len(notifier.messages_sent) == 1
+        assert "直近7日間の資産データがありません。" in notifier.messages_sent[0]

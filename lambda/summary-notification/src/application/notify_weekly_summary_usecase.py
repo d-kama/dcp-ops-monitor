@@ -1,9 +1,13 @@
-from datetime import date
+from datetime import date, datetime
 from string import Template
+from zoneinfo import ZoneInfo
 
+from src.config import get_logger
 from src.domain import AssetValuation, FinancialAssetHistory, IFinancialAssetRepository, LatestPortfolioTotal
 
 from .notifier_interface import INotifier
+
+logger = get_logger()
 
 _TEMPLATE = Template(
     "確定拠出年金 運用状況通知Bot\n"
@@ -13,6 +17,13 @@ _TEMPLATE = Template(
     "資産評価額: ${asset_valuation}円\n"
     "\n"
     "${weekly_section}"
+)
+
+_NO_DATA_TEMPLATE = Template(
+    "確定拠出年金 運用状況通知Bot\n"
+    "\n"
+    "直近${days}日間の資産データがありません。\n"
+    "資産収集処理が失敗している可能性があります。"
 )
 
 _WEEKLY_HEADER = "資産評価額推移（直近1週間）\n"
@@ -26,7 +37,15 @@ class NotifyWeeklySummaryUseCase:
         self.notifier = notifier
 
     def execute(self) -> None:
-        history = self.repository.retrieve_from_with_days(self.DAYS)
+        base_date = datetime.now(ZoneInfo("Asia/Tokyo")).date()
+        history = self.repository.retrieve_within_days(self.DAYS, base_date)
+        if not history.assets:
+            logger.warning(
+                "サマリ対象期間に資産データが存在しません",
+                extra={"days": self.DAYS, "base_date": str(base_date)},
+            )
+            self.notifier.notify([_NO_DATA_TEMPLATE.substitute(days=self.DAYS)])
+            return
         message = self._format(self._summarise(history))
         self.notifier.notify([message])
 

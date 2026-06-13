@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import date
 
 from shared.domain.financial_asset import FinancialAssetHistory
 
@@ -18,13 +19,15 @@ class IFinancialAssetRepository(ABC):
         """
 
     @abstractmethod
-    def retrieve_from_with_days(self, days: int) -> FinancialAssetHistory:
-        """直近 N 日分の金融資産履歴を取得する
+    def retrieve_within_days(self, days: int, base_date: date) -> FinancialAssetHistory:
+        """基準日から N 日以内の金融資産履歴を取得する
 
-        最新日付を基準に、(最新日 - days) より新しい日付の資産を返す。
+        (base_date - days) より後かつ base_date 以前の基準日を持つ資産を返す。
+        base_date より未来の日付は含まない。
 
         Args:
             days: 直近何日分を取得するか（正の整数）
+            base_date: 取得の基準日（通常は実行日）
 
         Returns:
             FinancialAssetHistory: 該当期間の金融資産履歴（空の場合は空の History を返す）
