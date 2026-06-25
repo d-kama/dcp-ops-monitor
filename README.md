@@ -1,5 +1,7 @@
 # dcp-ops-monitor
 
+> :warning: 本リポジトリは [d-kama/idash](https://github.com/d-kama/idash) へ移行しました。今後の更新はそちらで行います。
+
 [![ci](https://github.com/kamaD-y/dcp-ops-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/kamaD-y/dcp-ops-monitor/actions/workflows/ci.yml)
 [![cd](https://github.com/kamaD-y/dcp-ops-monitor/actions/workflows/cd.yml/badge.svg)](https://github.com/kamaD-y/dcp-ops-monitor/actions/workflows/cd.yml)
 ![last commit](https://img.shields.io/github/last-commit/kamaD-y/dcp-ops-monitor)
